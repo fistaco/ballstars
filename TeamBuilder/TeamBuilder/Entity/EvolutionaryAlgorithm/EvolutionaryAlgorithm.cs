@@ -9,7 +9,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         /// </summary>
         public abstract void Run();
 
-        protected abstract List<Individual.Individual> InitRandomPopulation();
+        protected abstract List<Individual.Individual> InitRandomPopulation(int amountOfIndividuals);
 
         protected abstract void SelectSurvivors(List<Individual.Individual> population);
     }

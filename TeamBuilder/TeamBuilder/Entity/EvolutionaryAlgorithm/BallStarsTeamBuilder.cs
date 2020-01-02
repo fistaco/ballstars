@@ -13,7 +13,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             throw new NotImplementedException();
         }
 
-        protected override List<Individual.Individual> InitRandomPopulation()
+        /// <summary>
+        /// Constructs the desired amount of initial random team constructions and evaluates their fitness.
+        /// </summary>
+        /// <param name="amountOfIndividuals"></param>
+        /// <returns></returns>
+        protected override List<Individual.Individual> InitRandomPopulation(int amountOfIndividuals)
         {
             throw new NotImplementedException();
         }
