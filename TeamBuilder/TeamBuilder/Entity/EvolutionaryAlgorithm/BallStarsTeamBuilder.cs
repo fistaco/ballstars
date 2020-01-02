@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 {
@@ -8,6 +7,9 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
     {
         public override void Run()
         {
+            // Construct n random solutions
+            // Evolve over generations until a sufficiently good solution is found or time runs out.
+
             throw new NotImplementedException();
         }
 
