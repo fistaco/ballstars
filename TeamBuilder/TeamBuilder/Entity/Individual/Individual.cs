@@ -10,17 +10,10 @@ namespace TeamBuilder.Entity.Individual
         public float Fitness;
 
         /// <summary>
-        /// Evaluates this individual using a given fitness function, sets the individual's fitness property and
-        /// returns the resulting fitness value.
+        /// Evaluates this individual, sets its fitness property and returns the resulting fitness value.
         /// </summary>
-        /// <param name="fitnessFunc"></param>
         /// <returns>The fitness value resulting from the evaluation.</returns>
-        public float Evaluate(Func<Individual, float> fitnessFunc)
-        {
-            this.Fitness = fitnessFunc(this);
-
-            return this.Fitness;
-        }
+        public abstract float Evaluate();
 
         /// <summary>
         /// Combines this individual with another given individual.
