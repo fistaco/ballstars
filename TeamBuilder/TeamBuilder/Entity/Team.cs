@@ -6,7 +6,7 @@ namespace TeamBuilder.Entity
 {
     internal class Team
     {
-        public List<Player> Members;
+        public List<Player> Members = new List<Player>();
 
         public int GenderImbalance;
         public int SportImbalance;
@@ -36,6 +36,8 @@ namespace TeamBuilder.Entity
                 this.AddPlayer(p);
             }
         }
+
+        public Team() { }
 
         public void AddPlayer(Player p)
         {
