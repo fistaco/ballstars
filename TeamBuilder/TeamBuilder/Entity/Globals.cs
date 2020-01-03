@@ -24,7 +24,7 @@ namespace TeamBuilder.Entity
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static List<T> Shuffle<T>(List<T> list)
+        public static List<T> Shuffle<T>(this List<T> list)
         {
             int n = list.Count;
             for (int i = 0; i < n - 1; i++)
