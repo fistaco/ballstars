@@ -6,7 +6,7 @@ namespace TeamBuilder.Entity.Individual
 {
     class BallStarsTeamSet : Individual
     {
-        public List<Team> Teams;
+        public List<Team> Teams = new List<Team>();
 
         /// <summary>
         /// Constructs a random set of teams based on a list of players given in a CSV file.
@@ -15,6 +15,31 @@ namespace TeamBuilder.Entity.Individual
         public BallStarsTeamSet(string fileName)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Constructs a random set of teams based on a given list of players and a desired team size.
+        /// </summary>
+        /// <param name="players"></param>
+        /// <param name="teamSize"></param>
+        public BallStarsTeamSet(List<Player> players, int teamSize)
+        {
+            // Shuffle the players and put them in a queue
+            Queue<Player> playerQueue = new Queue<Player>(players.Shuffle());
+
+            // Distribute the players over teams of the given size
+            Team currentTeam = new Team();
+            while (playerQueue.Count > 0)
+            {
+                Player p = playerQueue.Dequeue();
+                currentTeam.AddPlayer(p);
+
+                if (currentTeam.Members.Count == teamSize)
+                {
+                    this.Teams.Add(currentTeam);
+                    currentTeam = new Team();
+                }
+            }
         }
 
         /// <summary>
