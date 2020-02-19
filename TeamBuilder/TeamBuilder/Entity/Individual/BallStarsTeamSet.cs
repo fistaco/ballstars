@@ -52,7 +52,7 @@ namespace TeamBuilder.Entity.Individual
             int fitness = this.Teams.Sum(
                 team => team.GenderImbalance +
                         team.SportImbalance +
-                        (team.AmountOfOrganisers == 1 ? 0 : 999) // Heavily penalise teams with more than one organiser
+                        (team.AmountOfOrganisers <= 1 ? 0 : 999) // Heavily penalise teams with more than one organiser
             );
 
             this.Fitness = fitness;
