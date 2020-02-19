@@ -20,7 +20,7 @@ namespace TeamBuilder.Entity.Individual
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public abstract Individual Combine(Individual other);
+        public abstract Individual Crossover(Individual other);
 
         /// <summary>
         /// Changes one or multiple of this individual's properties.

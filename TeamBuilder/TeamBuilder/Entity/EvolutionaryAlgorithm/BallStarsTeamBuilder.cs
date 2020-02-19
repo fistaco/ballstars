@@ -43,7 +43,9 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
                         Console.WriteLine($"New best fitness: {bestFitness}");
 
-                        // TODO: Save the solution in a file or pretty-print it
+                        // TODO: Save the solution in a file
+                        bestSolution.Print();
+                        
                     }
                 }
             }

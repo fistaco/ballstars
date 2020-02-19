@@ -43,6 +43,11 @@ namespace TeamBuilder.Entity.Individual
         }
 
         /// <summary>
+        /// Constructs a BallStarsTeamSet with an empty list of teams.
+        /// </summary>
+        public BallStarsTeamSet() { }
+
+        /// <summary>
         /// Evaluates and sets this team set's fitness value. Its fitness, which should be minimised, is defined as the
         /// sum of all teams' gender and sport imbalances plus 999 for each team that has more than one organiser.
         /// </summary>
@@ -58,8 +63,8 @@ namespace TeamBuilder.Entity.Individual
             this.Fitness = fitness;
             return fitness;
         }
-
-        public override Individual Combine(Individual other)
+        
+        public override Individual Crossover(Individual other)
         {
             throw new NotImplementedException();
         }
@@ -67,6 +72,35 @@ namespace TeamBuilder.Entity.Individual
         public override void Mutate()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns a random team from this BallStarsTeamSet.
+        /// </summary>
+        /// <returns>A random Team object from this BallStarsTeamSet</returns>
+        private Team RandomTeam()
+        {
+            return this.Teams[Globals.Rand.Next(0, this.Teams.Count)];
+        }
+
+        public void Print()
+        {
+            Console.WriteLine($"Fitness: {this.Fitness}");
+            for (int i = 0; i < this.Teams.Count; i++)
+            {
+                Console.WriteLine($"Team {i}:");
+                this.Teams[i].Print();
+                Console.WriteLine();
+            }
+        }
+
+        public BallStarsTeamSet Clone()
+        {
+            var clone = new BallStarsTeamSet();
+            clone.Teams = this.Teams.Select(t => t.Clone()).ToList();
+            clone.Fitness = this.Fitness;
+
+            return clone;
         }
     }
 }

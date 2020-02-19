@@ -71,5 +71,19 @@ namespace TeamBuilder.Entity
             this.GenderImbalance = Math.Abs(_genderCounts[Gender.Male] - _genderCounts[Gender.Female]);
             this.SportImbalance = this._sportCounts.Count(pair => pair.Value != 1);
         }
+
+        public void Print()
+        {
+            foreach (Player p in this.Members)
+            {
+                Console.WriteLine($"{p.Name}, {p.Gender}, {p.Sport}");
+            }
+        }
+
+        public Team Clone()
+        {
+            List<Player> playerClones = this.Members.Select(p => p.Clone()).ToList();
+            return new Team(playerClones);
+        }
     }
 }
