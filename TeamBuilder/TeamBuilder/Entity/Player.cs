@@ -3,10 +3,10 @@ namespace TeamBuilder.Entity
 {
     internal class Player
     {
-        public string Name;
-        public Gender Gender;
-        public Sport Sport;
-        public bool InOrganisation;
+        public readonly string Name;
+        public readonly Gender Gender;
+        public readonly Sport Sport;
+        public readonly bool InOrganisation;
 
         public Player(string name, string gender, string sportName, bool inOrganisation)
         {
