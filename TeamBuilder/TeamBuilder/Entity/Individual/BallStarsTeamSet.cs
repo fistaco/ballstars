@@ -69,9 +69,19 @@ namespace TeamBuilder.Entity.Individual
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Swaps 2 randomly chosen players from two randomly chosen teams in this BallStarsTeamSet.
+        /// </summary>
         public override void Mutate()
         {
-            throw new NotImplementedException();
+            Team t0 = this.RandomTeam();
+            Team t1 = this.RandomTeam();
+
+            Player p0 = t0.RemoveRandomPlayer();
+            Player p1 = t1.RemoveRandomPlayer();
+            
+            t0.AddPlayer(p1);
+            t1.AddPlayer(p0);
         }
 
         /// <summary>

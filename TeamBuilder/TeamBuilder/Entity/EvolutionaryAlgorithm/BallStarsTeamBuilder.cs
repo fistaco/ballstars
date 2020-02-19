@@ -13,16 +13,20 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly int _teamSize;
 
-        public BallStarsTeamBuilder(string fileName, int teamSize)
+        private readonly double _mutationProbability;
+
+        public BallStarsTeamBuilder(string fileName, int teamSize, double mutationProbability)
         {
             _initialTeams = new BallStarsTeamSet(fileName);
             _teamSize = teamSize;
+            _mutationProbability = mutationProbability;
         }
 
         public override void Run()
         {
             // Construct n random solutions, which are permutations of one original random set
-            List<Individual.Individual> population = InitRandomPopulation(65536);
+            List<BallStarsTeamSet> population = InitRandomPopulation(65536)
+                .Select(indiv => indiv as BallStarsTeamSet).ToList();
 
             // Evolve over generations until a sufficiently good solution is found or time runs out.
             float bestFitness = _initialTeams.Evaluate();
@@ -32,6 +36,19 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 // Create offspring using recombination and mutation so we'll have 2n individuals
                 // Select best n individuals or do tournament select
                 
+                // Create offspring by randomly mutating the existing population
+                var offspring = new List<BallStarsTeamSet>();
+                foreach (var individual in population)
+                {
+                    BallStarsTeamSet clone = individual.Clone();
+                    clone.Mutate();
+                    offspring.Add(clone);
+                }
+                
+                // Select the best n individuals out of the population + offspring
+                // TODO: Evaluate everything first
+                population = NaiveSelection(population, offspring);
+
                 // Evaluate the selected individuals and update bestFitness
                 foreach (var individual in population)
                 {
@@ -72,6 +89,14 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         protected override void SelectSurvivors(List<Individual.Individual> population)
         {
             throw new NotImplementedException();
+        }
+
+        private List<BallStarsTeamSet> NaiveSelection(List<BallStarsTeamSet> population,
+            List<BallStarsTeamSet> offspring)
+        {
+            // Sort the combined P+O list and return the top n
+            population.AddRange(offspring);
+            return population.OrderBy(indiv => indiv.Fitness).Take(offspring.Count).ToList();
         }
     }
 }
