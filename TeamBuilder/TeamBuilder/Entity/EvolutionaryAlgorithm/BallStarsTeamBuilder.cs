@@ -31,11 +31,9 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             // Evolve over generations until a sufficiently good solution is found or time runs out.
             float bestFitness = _initialTeams.Evaluate();
             BallStarsTeamSet bestSolution = _initialTeams;
-            while (bestFitness != 0f) // TODO: Include timer
+            int currentGen = 0;
+            while (bestFitness != 0f && currentGen < 10000) // TODO: Include timer
             {
-                // Create offspring using recombination and mutation so we'll have 2n individuals
-                // Select best n individuals or do tournament select
-                
                 // Create offspring by randomly mutating the existing population
                 var offspring = new List<BallStarsTeamSet>();
                 foreach (var individual in population)
@@ -58,13 +56,15 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                         bestFitness = fitness;
                         bestSolution = individual as BallStarsTeamSet;
 
-                        Console.WriteLine($"New best fitness: {bestFitness}");
+                        Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen}");
 
                         // TODO: Save the solution in a file
                         bestSolution.Print();
                         
                     }
                 }
+
+                currentGen++;
             }
 
             throw new NotImplementedException();
