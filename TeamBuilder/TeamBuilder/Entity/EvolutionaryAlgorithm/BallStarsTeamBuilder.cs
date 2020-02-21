@@ -12,14 +12,11 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         private List<Player> _players = new List<Player>(); // TODO: initialise _players using given input file
 
         private readonly int _teamSize;
-
-        private readonly double _mutationProbability;
-
-        public BallStarsTeamBuilder(string fileName, int teamSize, double mutationProbability)
+        
+        public BallStarsTeamBuilder(string fileName, int teamSize)
         {
             _initialTeams = new BallStarsTeamSet(fileName);
             _teamSize = teamSize;
-            _mutationProbability = mutationProbability;
         }
 
         public override void Run()
