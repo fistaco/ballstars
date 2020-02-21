@@ -12,11 +12,14 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         private List<Player> _players = new List<Player>(); // TODO: initialise _players using given input file
 
         private readonly int _teamSize;
+
+        private readonly string _outputFile;
         
-        public BallStarsTeamBuilder(string fileName, int teamSize)
+        public BallStarsTeamBuilder(string fileName, int teamSize, string outputFile)
         {
             _initialTeams = new BallStarsTeamSet(fileName);
             _teamSize = teamSize;
+            _outputFile = outputFile;
         }
 
         public override void Run()
@@ -57,8 +60,6 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                         bestSolution = individual as BallStarsTeamSet;
 
                         Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen}");
-
-                        // TODO: Save the solution in a file
                         bestSolution.Print();
                     }
                 }
@@ -66,7 +67,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 currentGen++;
             }
 
-            throw new NotImplementedException();
+            // Save the best solution to a file
+            bestSolution.SaveToCsv(_outputFile);
         }
 
         /// <summary>

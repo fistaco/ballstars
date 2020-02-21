@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace TeamBuilder.Entity.Individual
@@ -102,6 +103,17 @@ namespace TeamBuilder.Entity.Individual
                 this.Teams[i].Print();
                 Console.WriteLine();
             }
+        }
+
+        public void SaveToCsv(string outputFile)
+        {
+            File.WriteAllText(outputFile, "Name;Gender;Sport;TeamId\n");
+            var lines = new List<string>();
+            for (int i = 0; i < this.Teams.Count; i++)
+            {
+                this.Teams[i].Members.ForEach(p => lines.Add($"{p.Name};{p.Sport};{p.Gender};{i}"));
+            }
+            File.AppendAllLines(outputFile, lines);
         }
 
         public BallStarsTeamSet Clone()

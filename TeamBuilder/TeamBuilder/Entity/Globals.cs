@@ -5,9 +5,9 @@ namespace TeamBuilder.Entity
 {
     public static class Globals
     {
-        public static Random Rand = new Random(77);
+        public static readonly Random Rand = new Random(77);
 
-        public static Dictionary<string, Sport> SportsMap = new Dictionary<string, Sport>()
+        public static readonly Dictionary<string, Sport> SportsMap = new Dictionary<string, Sport>()
         {
             { "Badminton", Sport.Badminton },
             { "Basketball", Sport.Basketball },
