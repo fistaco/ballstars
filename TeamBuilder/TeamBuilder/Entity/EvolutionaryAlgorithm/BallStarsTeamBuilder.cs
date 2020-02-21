@@ -32,7 +32,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             float bestFitness = _initialTeams.Evaluate();
             BallStarsTeamSet bestSolution = _initialTeams;
             int currentGen = 0;
-            while (bestFitness != 0f && currentGen < 10000) // TODO: Include timer
+            while (bestFitness != 0f && currentGen < 10000) // TODO: Include timer if necessary
             {
                 // Create offspring by randomly mutating the existing population
                 var offspring = new List<BallStarsTeamSet>();
@@ -43,14 +43,17 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     offspring.Add(clone);
                 }
                 
+                // Evaluate both the population and the offspring
+                population.ForEach(teamSet => teamSet.Evaluate());
+                offspring.ForEach(teamSet => teamSet.Evaluate());
+                
                 // Select the best n individuals out of the population + offspring
-                // TODO: Evaluate everything first
                 population = NaiveSelection(population, offspring);
 
-                // Evaluate the selected individuals and update bestFitness
+                // Update bestFitness if possible
                 foreach (var individual in population)
                 {
-                    float fitness = individual.Evaluate();
+                    float fitness = individual.Fitness;
                     if (fitness < bestFitness)
                     {
                         bestFitness = fitness;
@@ -60,7 +63,6 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
                         // TODO: Save the solution in a file
                         bestSolution.Print();
-                        
                     }
                 }
 
