@@ -70,7 +70,7 @@ namespace TeamBuilder.Entity
 
             // Update imbalances by using the gender and sport counts of which we're keeping track
             this.GenderImbalance = Math.Abs(_genderCounts[Gender.Male] - _genderCounts[Gender.Female]);
-            this.SportImbalance = this._sportCounts.Count(pair => pair.Value != 1);
+            this.SportImbalance = this._sportCounts.Sum(pair => (int) Math.Pow(pair.Value - 1, 2));
         }
 
         public Team Clone()
