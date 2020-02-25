@@ -27,8 +27,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         public override void Run()
         {
-            // Construct n random solutions, which are permutations of one original random set
             Console.WriteLine("Initiating random population of team sets...");
+            // Construct n random solutions, which are permutations of one original random set
             List<BallStarsTeamSet> population = InitRandomPopulation(65536)
                 .Select(indiv => indiv as BallStarsTeamSet).ToList();
 
@@ -36,10 +36,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             float bestFitness = _initialTeams.Evaluate();
             BallStarsTeamSet bestSolution = _initialTeams;
             int currentGen = 0;
-            Console.WriteLine($"Starting evolutionary algorithm at generation 0...");
             while (bestFitness != 0f && currentGen < 10000) // TODO: Include timer if necessary
             {
+                Console.WriteLine($"Commencing generation {currentGen}.");
+
                 // Create offspring by randomly mutating the existing population
+                Console.WriteLine("Cloning population to create offspring...");
                 var offspring = new List<BallStarsTeamSet>();
                 foreach (var individual in population)
                 {
@@ -48,23 +50,26 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     offspring.Add(clone);
                 }
                 
+                Console.WriteLine("Evaluating all individuals...");
                 // Evaluate both the population and the offspring
                 population.ForEach(teamSet => teamSet.Evaluate());
                 offspring.ForEach(teamSet => teamSet.Evaluate());
                 
                 // Select the best n individuals out of the population + offspring
+                Console.WriteLine("Selecting best individuals....");
                 population = NaiveSelection(population, offspring);
 
                 // Update bestFitness if possible
+                Console.WriteLine("Updating best fitness...");
                 foreach (var individual in population)
                 {
                     float fitness = individual.Fitness;
                     if (fitness < bestFitness)
                     {
                         bestFitness = fitness;
-                        bestSolution = individual as BallStarsTeamSet;
+                        bestSolution = individual;
 
-                        Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen}");
+                        Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen})");
                         bestSolution.Print();
                     }
                 }
@@ -74,6 +79,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
             // Save the best solution to a file
             bestSolution.SaveToCsv(_outputFile);
+            Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
         }
 
         /// <summary>
