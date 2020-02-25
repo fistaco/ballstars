@@ -10,20 +10,12 @@ namespace TeamBuilder.Entity.Individual
         public List<Team> Teams = new List<Team>();
 
         /// <summary>
-        /// Constructs a random set of teams based on a list of players given in a CSV file.
-        /// </summary>
-        /// <param name="fileName"></param>
-        public BallStarsTeamSet(string fileName)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Constructs a random set of teams based on a given list of players and a desired team size.
+        /// Constructs a random set of teams based on a given list of players and a desired team size. The default
+        /// team size is 8.
         /// </summary>
         /// <param name="players"></param>
         /// <param name="teamSize"></param>
-        public BallStarsTeamSet(List<Player> players, int teamSize)
+        public BallStarsTeamSet(List<Player> players, int teamSize = 8)
         {
             // Shuffle the players and put them in a queue
             Queue<Player> playerQueue = new Queue<Player>(players.Shuffle());

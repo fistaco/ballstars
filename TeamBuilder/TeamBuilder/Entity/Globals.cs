@@ -9,12 +9,13 @@ namespace TeamBuilder.Entity
 
         public static readonly Dictionary<string, Sport> SportsMap = new Dictionary<string, Sport>()
         {
+            // Sport names (English)
             { "Badminton", Sport.Badminton },
             { "Basketball", Sport.Basketball },
             { "Floorball", Sport.Floorball },
             { "Korfball", Sport.Korfball },
             { "Squash", Sport.Squash },
-            { "TableTennis", Sport.TableTennis },
+            { "Table tennis", Sport.TableTennis },
             { "Volleyball", Sport.Volleyball }
         };
 

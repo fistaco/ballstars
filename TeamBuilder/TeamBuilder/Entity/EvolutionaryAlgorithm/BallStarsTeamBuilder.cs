@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TeamBuilder.Entity.Individual;
 
@@ -15,9 +16,11 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly string _outputFile;
         
-        public BallStarsTeamBuilder(string fileName, int teamSize, string outputFile)
+        public BallStarsTeamBuilder(string filename, int teamSize, string outputFile)
         {
-            _initialTeams = new BallStarsTeamSet(fileName);
+            _players = this.ParsePlayers(filename);
+            
+            _initialTeams = new BallStarsTeamSet();
             _teamSize = teamSize;
             _outputFile = outputFile;
         }
@@ -69,6 +72,27 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
             // Save the best solution to a file
             bestSolution.SaveToCsv(_outputFile);
+        }
+
+        /// <summary>
+        /// Constructs a list of players given a correctly formatted CSV file.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        private List<Player> ParsePlayers(string filename)
+        {
+            List<Player> players = new List<Player>();
+            
+            // Assume the first line contains the column names
+            string[] lines = File.ReadAllLines(filename);
+            for (int i = 1; i < lines.Length; i++)
+            {
+                // Assume fields are in the following order: First name, Last name, Gender, Sport
+                string[] fields = lines[i].Split(",");
+                players.Add(new Player($"{fields[0]} {fields[1]}", fields[2], fields[3], false));
+            }
+
+            return players;
         }
 
         /// <summary>
