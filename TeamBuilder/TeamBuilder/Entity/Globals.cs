@@ -18,6 +18,22 @@ namespace TeamBuilder.Entity
             { "Table tennis", Sport.TableTennis },
             { "Volleyball", Sport.Volleyball }
         };
+        
+        public static readonly Dictionary<SportsMatchCategory, int> MatchTypePlayerLimits =
+            new Dictionary<SportsMatchCategory, int>()
+        {
+            { SportsMatchCategory.Badminton, 4 }, // 2 singles
+            { SportsMatchCategory.Basketball, 24 }, // 5v5 + reserves on 2 courts
+            { SportsMatchCategory.BadmintonDoubles, 4 },
+            { SportsMatchCategory.Floorball, 10 }, // 4v4 on mini-court + reserves
+            { SportsMatchCategory.Korfball, 16 }, // 8v8
+            // { SportsMatchCategory.Referee, 3 } 
+            { SportsMatchCategory.Squash, 8 }, // 4 singles
+            { SportsMatchCategory.TableTennis, 10 }, // 3 singles + 1 doubles
+            { SportsMatchCategory.Volleyball, 12 }, // 6v6
+            { SportsMatchCategory.Basketball, 12 }, // 5v5 + reserve
+            { SportsMatchCategory.Break, 10 }, // One team can take a break at a time.
+        };
 
         /// <summary>
         /// Randomly shuffles a given list in-place.
