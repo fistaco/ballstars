@@ -12,11 +12,11 @@ TABLE_TENNIS_STRINGS = []
 VOLLEYBALL_STRINGS = []
 
 SPORT_REGEX_PATTERNS = {
-    "Badminton": ["badminton", "sb", "helios"],
+    "Badminton": ["badminton", "(sb\s)?helios"],
     "Basketball": ["basket\s?ball?", "usbf"],
-    "Floorball": ["floor\s?ball?", "usfv", "jungle\s?speed"],
-    "Korfball": ["korf\s?ball?", "uskv", "hebbes"],
-    "Squash": ["squash", "us", "beat\s?it"],
+    "Floorball": ["floor\s?ball?", "(usfv\s)?jungle\s?speed"],
+    "Korfball": ["korf\s?ball?", "(uskv\s)?hebbes"],
+    "Squash": ["squash", "(us\s)?beat\s?it"],
     "Table tennis": ["table\s?tennis", "tafel\s?tennis", "(ust\s)?traiectum"],
     "Volleyball": ["volley\s?ball?", "van slag"]
 }
