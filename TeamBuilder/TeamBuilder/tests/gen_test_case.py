@@ -35,6 +35,6 @@ if __name__ == "__main__":
         df.loc[i, "Which SSV are you member of?"] = rnd.choice(ssv_names)
 
     # Save to CSV
-    filename = f"./test-input-{player_count}-players.csv"
+    filename = f"./test-cases/test-input-{player_count}-players.csv"
     df.to_csv(filename, index=False)
     print(f"Test case saved to {filename}.")
