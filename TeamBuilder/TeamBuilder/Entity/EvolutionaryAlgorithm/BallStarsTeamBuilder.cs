@@ -20,7 +20,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         {
             _players = this.ParsePlayers(filename);
             
-            _initialTeams = new BallStarsTeamSet();
+            _initialTeams = new BallStarsTeamSet(_players, teamSize);
             _teamSize = teamSize;
             _outputFile = outputFile;
         }
@@ -28,6 +28,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         public override void Run()
         {
             // Construct n random solutions, which are permutations of one original random set
+            Console.WriteLine("Initiating random population of team sets...");
             List<BallStarsTeamSet> population = InitRandomPopulation(65536)
                 .Select(indiv => indiv as BallStarsTeamSet).ToList();
 
@@ -35,6 +36,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             float bestFitness = _initialTeams.Evaluate();
             BallStarsTeamSet bestSolution = _initialTeams;
             int currentGen = 0;
+            Console.WriteLine($"Starting evolutionary algorithm at generation 0...");
             while (bestFitness != 0f && currentGen < 10000) // TODO: Include timer if necessary
             {
                 // Create offspring by randomly mutating the existing population
