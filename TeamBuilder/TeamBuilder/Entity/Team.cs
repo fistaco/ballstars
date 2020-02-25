@@ -20,13 +20,14 @@ namespace TeamBuilder.Entity
 
         private readonly Dictionary<Sport, int> _sportCounts = new Dictionary<Sport, int>()
         {
+            // TODO: make sport participation a variable so we don't have to manually comment/uncomment sports
             {Sport.Badminton, 0},
             {Sport.Basketball, 0},
             {Sport.Floorball, 0},
             {Sport.Korfball, 0},
-            {Sport.Squash, 0},
+            // {Sport.Squash, 0},
             {Sport.TableTennis, 0},
-            {Sport.Volleyball, 0}
+            // {Sport.Volleyball, 0}
         };
 
         public Team(List<Player> members)

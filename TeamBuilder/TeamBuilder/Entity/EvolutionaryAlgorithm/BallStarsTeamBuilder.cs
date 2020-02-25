@@ -117,7 +117,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             var population = new List<Individual.Individual>();
             for (int i = 0; i < amountOfIndividuals; i++)
             {
-                population.Add(new BallStarsTeamSet(_players, 8));
+                population.Add(new BallStarsTeamSet(_players, _teamSize));
             }
 
             return population;
