@@ -3,23 +3,24 @@ namespace TeamBuilder.Entity
 {
     internal class Player
     {
-        public readonly string Name;
+        public readonly int ID;
         public readonly Gender Gender;
         public readonly Sport Sport;
         public readonly bool InOrganisation;
 
-        private readonly string _genderString;
-        private readonly string _sportName;
-
-        public Player(string name, string gender, string sportName, bool inOrganisation)
+        public Player(int id, string gender, string sportName, bool inOrganisation)
         {
-            this.Name = name;
+            this.ID = id;
             this.Gender = gender == "Male" ? Gender.Male : Gender.Female;
             this.Sport = Globals.SportsMap[sportName];
             this.InOrganisation = inOrganisation;
+        }
 
-            _genderString = gender;
-            _sportName = sportName;
+        public Player(int id, Gender gender, Sport sport, bool inOrganisation)
+        {
+            this.ID = id;
+            this.Gender = gender;
+            this.Sport = sport;
         }
 
         public bool IsMale()
@@ -34,7 +35,7 @@ namespace TeamBuilder.Entity
 
         public Player Clone()
         {
-            return new Player(this.Name, _genderString, _sportName, this.InOrganisation);
+            return new Player(this.ID, this.Gender, this.Sport, this.InOrganisation);
         }
     }
 }

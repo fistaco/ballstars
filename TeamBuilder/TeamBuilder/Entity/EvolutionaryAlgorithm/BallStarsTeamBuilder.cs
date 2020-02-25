@@ -9,8 +9,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
     class BallStarsTeamBuilder : EvolutionaryAlgorithm
     {
         private BallStarsTeamSet _initialTeams;
+        private List<Player> _players;
 
-        private List<Player> _players = new List<Player>(); // TODO: initialise _players using given input file
+        /// <summary>
+        /// Array of names that link Player.ID integers to the actual player names.
+        /// </summary>
+        private string[] _playerNames;
 
         private readonly int _teamSize;
 
@@ -29,38 +33,35 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         {
             Console.WriteLine("Initiating random population of team sets...");
             // Construct n random solutions, which are permutations of one original random set
-            List<BallStarsTeamSet> population = InitRandomPopulation(65536)
+            List<BallStarsTeamSet> population = InitRandomPopulation(8192)
                 .Select(indiv => indiv as BallStarsTeamSet).ToList();
 
             // Evolve over generations until a sufficiently good solution is found or time runs out.
             float bestFitness = _initialTeams.Evaluate();
             BallStarsTeamSet bestSolution = _initialTeams;
             int currentGen = 0;
-            while (bestFitness != 0f && currentGen < 10000) // TODO: Include timer if necessary
+            while (bestFitness != 0f && currentGen < 100) // TODO: Include timer if necessary
             {
                 Console.WriteLine($"Commencing generation {currentGen}.");
 
                 // Create offspring by randomly mutating the existing population
-                Console.WriteLine("Cloning population to create offspring...");
                 var offspring = new List<BallStarsTeamSet>();
                 foreach (var individual in population)
                 {
                     BallStarsTeamSet clone = individual.Clone();
+                    // BallStarsTeamSet clone = individual.CloneBySerialisation();
                     clone.Mutate();
                     offspring.Add(clone);
                 }
                 
-                Console.WriteLine("Evaluating all individuals...");
                 // Evaluate both the population and the offspring
                 population.ForEach(teamSet => teamSet.Evaluate());
                 offspring.ForEach(teamSet => teamSet.Evaluate());
                 
                 // Select the best n individuals out of the population + offspring
-                Console.WriteLine("Selecting best individuals....");
                 population = NaiveSelection(population, offspring);
 
                 // Update bestFitness if possible
-                Console.WriteLine("Updating best fitness...");
                 foreach (var individual in population)
                 {
                     float fitness = individual.Fitness;
@@ -70,7 +71,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                         bestSolution = individual;
 
                         Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen})");
-                        bestSolution.Print();
+                        // bestSolution.Print(_playerNames); // TODO: uncomment for practical use
                     }
                 }
 
@@ -78,7 +79,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             }
 
             // Save the best solution to a file
-            bestSolution.SaveToCsv(_outputFile);
+            bestSolution.SaveToCsv(_outputFile, _playerNames);
             Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
         }
 
@@ -93,11 +94,14 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             
             // Assume the first line contains the column names
             string[] lines = File.ReadAllLines(filename);
+            _playerNames = new string[lines.Length - 1];
             for (int i = 1; i < lines.Length; i++)
             {
-                // Assume fields are in the following order: First name, Last name, Gender, Sport
+                // Assume fields are in the following order: First name, Last name, Gender, Sport.
                 string[] fields = lines[i].Split(",");
-                players.Add(new Player($"{fields[0]} {fields[1]}", fields[2], fields[3], false));
+                int id = i - 1;
+                _playerNames[id] = $"{fields[0]} {fields[1]}";
+                players.Add(new Player(id, fields[2], fields[3], false));
             }
 
             return players;

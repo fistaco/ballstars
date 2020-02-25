@@ -86,24 +86,29 @@ namespace TeamBuilder.Entity.Individual
             return this.Teams[Globals.Rand.Next(0, this.Teams.Count)];
         }
 
-        public void Print()
+        public void Print(string[] playerNames)
         {
             Console.WriteLine($"Fitness: {this.Fitness}");
             for (int i = 0; i < this.Teams.Count; i++)
             {
                 Console.WriteLine($"Team {i}:");
-                this.Teams[i].Print();
+                
+                foreach (Player p in this.Teams[i].Members)
+                {
+                    Console.WriteLine($"{playerNames[p.ID]}, {p.Gender}, {p.Sport}");
+                }
+
                 Console.WriteLine();
             }
         }
 
-        public void SaveToCsv(string outputFile)
+        public void SaveToCsv(string outputFile, string[] playerNames)
         {
             File.WriteAllText(outputFile, "Name;Gender;Sport;TeamId\n");
             var lines = new List<string>();
             for (int i = 0; i < this.Teams.Count; i++)
             {
-                this.Teams[i].Members.ForEach(p => lines.Add($"{p.Name};{p.Sport};{p.Gender};{i}"));
+                this.Teams[i].Members.ForEach(p => lines.Add($"{playerNames[p.ID]};{p.Sport};{p.Gender};{i}"));
             }
             File.AppendAllLines(outputFile, lines);
         }
