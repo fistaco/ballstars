@@ -1,20 +1,27 @@
 using System;
 using System.Collections.Generic;
+using TeamBuilder.Entity.Individual;
 
 namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 {
     internal class BallStarsSchedulePlanner : EvolutionaryAlgorithm
     {
-        private int _amountOfRounds;
+        private readonly int _amountOfRounds;
         
         private readonly string[] _teamNames;
-        private int _maxPlayersPerTeam;
+        private readonly int _amountOfTeams;
+        private readonly int _maxPlayersPerTeam;
+
+        private List<SportsMatch> _matchPool;
 
         public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int maxPlayersPerTeam)
         {
             _amountOfRounds = amountOfRounds;
             _teamNames = teamNames;
+            _amountOfTeams = teamNames.Length;
             _maxPlayersPerTeam = maxPlayersPerTeam;
+
+            _matchPool = this.InitialiseMatchPool();
         }
         
         public override void Run()
@@ -48,7 +55,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             return matchUps;
         }
         
-        public List<SportsMatch> InitialiseMatchPool()
+        private List<SportsMatch> InitialiseMatchPool()
         {
             // Each match has a category and an amount of players to be allotted per team
             return new List<SportsMatch>()
@@ -75,7 +82,21 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         protected override List<Individual.Individual> InitRandomPopulation(int amountOfIndividuals)
         {
-            throw new System.NotImplementedException();
+            var population = new List<Individual.Individual>();
+            
+            // If there is an odd amount of teams, add a break event to every round.
+            bool addBreakRound = _amountOfTeams % 2 == 1;
+            int eventsPerRound = addBreakRound ? _amountOfTeams / 2 + 1 : _amountOfTeams / 2;
+            int regularEventsPerRound = addBreakRound ? eventsPerRound - 1 : eventsPerRound;
+            
+            for (int i = 0; i < amountOfIndividuals; i++)
+            {
+                population.Add(BallStarsSchedule.Random(
+                    _amountOfTeams, eventsPerRound, regularEventsPerRound, _amountOfRounds, _matchPool, addBreakRound
+                ));
+            }
+
+            return population;
         }
 
         protected override void SelectSurvivors(List<Individual.Individual> population)
