@@ -14,13 +14,13 @@ namespace TeamBuilder.Entity
         }
 
         /// <summary>
-        /// Returns a copy of a random SportsMatch event from a given pool.
+        /// Returns a random SportsMatch event from a given pool.
         /// </summary>
         /// <returns></returns>
         public static SportsMatch Random(List<SportsMatch> matchPool)
         {
             int randIndex = Globals.Rand.Next(0, matchPool.Count);
-            return matchPool[randIndex].Clone();
+            return matchPool[randIndex]; // TODO: Check if cloning is necessary
         }
         
         /// <summary>
