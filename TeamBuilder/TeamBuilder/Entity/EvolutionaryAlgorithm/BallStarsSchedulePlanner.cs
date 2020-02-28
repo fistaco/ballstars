@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TeamBuilder.Entity.Individual;
 
 namespace TeamBuilder.Entity.EvolutionaryAlgorithm
@@ -12,9 +13,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         private readonly int _amountOfTeams;
         private readonly int _maxPlayersPerTeam;
 
-        private List<SportsMatch> _matchPool;
+        private readonly List<SportsMatch> _matchPool;
 
-        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int maxPlayersPerTeam)
+        private readonly string _outputFile;
+
+        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int maxPlayersPerTeam,
+            string outputFile)
         {
             _amountOfRounds = amountOfRounds;
             _teamNames = teamNames;
@@ -22,11 +26,61 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             _maxPlayersPerTeam = maxPlayersPerTeam;
 
             _matchPool = this.InitialiseMatchPool();
+
+            _outputFile = outputFile;
         }
-        
+
         public override void Run()
         {
-            throw new System.NotImplementedException();
+            Console.WriteLine("Initiating random population of schedules...");
+            // Construct n random solutions, which are permutations of one original random set
+            List<BallStarsSchedule> population = InitRandomPopulation(8192)
+                .Select(indiv => indiv as BallStarsSchedule).ToList();
+
+            // Evolve over generations until a sufficiently good solution is found or time runs out.
+            BallStarsSchedule bestSolution = population[0];
+            float bestFitness = bestSolution.Evaluate();
+            int currentGen = 0;
+            while (bestFitness != 0f && currentGen < 100) // TODO: Include timer if necessary
+            {
+                Console.WriteLine($"Commencing generation {currentGen}.");
+
+                // Create offspring by randomly mutating the existing population
+                var offspring = new List<BallStarsSchedule>();
+                foreach (var individual in population)
+                {
+                    // TODO: Use crossover to create offspring
+                }
+                // TODO: Randomly apply mutation
+                
+                // Evaluate both the population and the offspring
+                population.ForEach(teamSet => teamSet.Evaluate());
+                offspring.ForEach(teamSet => teamSet.Evaluate());
+                
+                // Select the best n individuals out of the population + offspring
+                population = NaiveSelection(population, offspring);
+
+                // Update bestFitness if possible
+                foreach (var individual in population)
+                {
+                    float fitness = individual.Fitness;
+                    if (fitness < bestFitness)
+                    {
+                        bestFitness = fitness;
+                        bestSolution = individual;
+
+                        Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen})");
+                        // bestSolution.Print(_playerNames);
+                    }
+                }
+
+                currentGen++;
+            }
+
+            // Save the best solution to a file
+            bestSolution.SaveToCsv(_outputFile);
+            Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
+
         }
 
         /// <summary>
@@ -102,6 +156,14 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         protected override void SelectSurvivors(List<Individual.Individual> population)
         {
             throw new System.NotImplementedException();
+        }
+        
+        private List<BallStarsSchedule> NaiveSelection(List<BallStarsSchedule> population,
+            List<BallStarsSchedule> offspring)
+        {
+            // Sort the combined P+O list and return the top n
+            population.AddRange(offspring);
+            return population.OrderBy(indiv => indiv.Fitness).Take(offspring.Count).ToList();
         }
     }
 }
