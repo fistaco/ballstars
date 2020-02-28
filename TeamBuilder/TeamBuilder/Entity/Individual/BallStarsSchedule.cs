@@ -5,37 +5,32 @@ namespace TeamBuilder.Entity.Individual
     internal class BallStarsSchedule : Individual
     {
         public RoundPlanning[] Rounds;
+
         
-        public BallStarsSchedule(int timeSlotAmount)
+        /// <summary>
+        /// Constructs an empty BallStarsSchedule with an initialised, but undefined array of a given number of rounds.
+        /// </summary>
+        /// <param name="amountOfRounds"></param>
+        public BallStarsSchedule(int amountOfRounds)
         {
-            this.Rounds = new RoundPlanning[timeSlotAmount];
+            this.Rounds = new RoundPlanning[amountOfRounds];
         }
 
-        public List<SportsMatch> InitialiseMatchPool()
+        /// <summary>
+        /// Constructs a random schedule consisting of a given amount of rounds where teams are randomly scheduled to
+        /// compete against each other in random events without exceeding the player limit per team.
+        /// </summary>
+        /// <param name="amountOfRounds"></param>
+        /// <param name="playersPerTeam"></param>
+        public static BallStarsSchedule Random(int amountOfRounds, int playersPerTeam)
         {
-            // Each match has a category and an amount of players to be allotted per team
-            return new List<SportsMatch>()
-            {
-                new SportsMatch(SportsMatchCategory.Badminton, 1),
-                new SportsMatch(SportsMatchCategory.Badminton, 2),
-                new SportsMatch(SportsMatchCategory.BadmintonDoubles, 2),
-                new SportsMatch(SportsMatchCategory.Basketball, 5),
-                new SportsMatch(SportsMatchCategory.Basketball, 6), // 1 reserve
-                new SportsMatch(SportsMatchCategory.Floorball, 4),
-                new SportsMatch(SportsMatchCategory.Floorball, 5),
-                new SportsMatch(SportsMatchCategory.Korfball, 8),
-                new SportsMatch(SportsMatchCategory.Squash, 1),
-                new SportsMatch(SportsMatchCategory.Squash, 2),
-                new SportsMatch(SportsMatchCategory.Squash, 3),
-                new SportsMatch(SportsMatchCategory.TableTennis, 1),
-                new SportsMatch(SportsMatchCategory.TableTennis, 2),
-                new SportsMatch(SportsMatchCategory.TableTennis, 3),
-                new SportsMatch(SportsMatchCategory.TableTennisDoubles, 2),
-                new SportsMatch(SportsMatchCategory.Volleyball, 6),
-                new SportsMatch(SportsMatchCategory.Referee, 1)
-            };
+            var schedule = new BallStarsSchedule(amountOfRounds);
+            
+            // TODO: Create random rounds
+            
+            return schedule;
         }
-        
+
         public override float Evaluate()
         {
             throw new System.NotImplementedException();
@@ -49,6 +44,11 @@ namespace TeamBuilder.Entity.Individual
         public override void Mutate()
         {
             throw new System.NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
         }
     }
 }
