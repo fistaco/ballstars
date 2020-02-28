@@ -49,5 +49,18 @@ namespace TeamBuilder.Entity
             AmountOfTeamsPlayed = 0;
             AmountOfSportsPlayed = 0;
         }
+
+        public void AddSportPlayed(Sport sport)
+        {
+            if (!SportsPlayed.Contains(sport))
+            {
+                SportsPlayed.Add(sport);
+                AmountOfSportsPlayed++;
+            }
+        }
+
+        public void RemoveSportPlayed(Sport sport)
+        {
+        }
     }
 }

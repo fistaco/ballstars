@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace TeamBuilder.Entity.Individual
@@ -6,13 +7,29 @@ namespace TeamBuilder.Entity.Individual
     {
         public RoundPlanning[] Rounds;
         
+        private const int MediumEvalPenalty = 300;
+        private const int HeavyEvalPenalty = 999;
+
+        /// <summary>
+        /// Tracks each team's statistics for efficient usage during fitness evaluation.
+        /// </summary>
+        private ScheduleTeamStatistics[] _teamStats; // TODO: Update team stats after random schedule generation
+
+
         /// <summary>
         /// Constructs an empty BallStarsSchedule with an initialised, but undefined array of a given number of rounds.
         /// </summary>
         /// <param name="amountOfRounds"></param>
-        public BallStarsSchedule(int amountOfRounds)
+        /// <param name="amountOfTeams"></param>
+        public BallStarsSchedule(int amountOfRounds, int amountOfTeams)
         {
             this.Rounds = new RoundPlanning[amountOfRounds];
+            
+            _teamStats = new ScheduleTeamStatistics[amountOfTeams];
+            for (int i = 0; i < amountOfTeams; i++)
+            {
+                _teamStats[i] = new ScheduleTeamStatistics(amountOfTeams, amountOfRounds);
+            }
         }
 
         /// <summary>
@@ -28,7 +45,7 @@ namespace TeamBuilder.Entity.Individual
         public static BallStarsSchedule Random(int amountOfTeams, int amountOfEvents, int amountOfRegularEvents,
             int amountOfRounds, List<SportsMatch> matchPool, bool breakRound)
         {
-            var schedule = new BallStarsSchedule(amountOfRounds);
+            var schedule = new BallStarsSchedule(amountOfRounds, amountOfTeams);
 
             // TODO: Incorporate maxPlayersPerTeam instead of leaving it to the evaluation method
             for (int i = 0; i < amountOfRounds; i++)
@@ -42,7 +59,10 @@ namespace TeamBuilder.Entity.Individual
 
         public override float Evaluate()
         {
-            throw new System.NotImplementedException();
+            int fitness = 7;
+
+            this.Fitness = fitness;
+            return fitness;
         }
 
         public override Individual Crossover(Individual other)
@@ -55,9 +75,29 @@ namespace TeamBuilder.Entity.Individual
             throw new System.NotImplementedException();
         }
 
+        public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
+        {
+            // Add a random SportsMatch from the pool to a random event in the schedule
+            Event evnt = this.GetRandomRound().GetRandomEvent();
+            var match = SportsMatch.Random(matchPool);
+            evnt.Matches.Add(match);
+            
+            // Update the involved teams' statistics // TODO
+        }
+
+        private RoundPlanning GetRandomRound()
+        {
+            return this.Rounds[Globals.Rand.Next(this.Rounds.Length)];
+        }
+
         public override string ToString()
         {
             return base.ToString();
+        }
+
+        public void SaveToCsv(string outputFile)
+        {
+            throw new NotImplementedException();
         }
     }
 }

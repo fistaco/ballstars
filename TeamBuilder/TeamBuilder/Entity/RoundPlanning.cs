@@ -49,5 +49,10 @@ namespace TeamBuilder.Entity
             
             return round;
         }
+
+        public Event GetRandomEvent()
+        {
+            return this.Events[Globals.Rand.Next(this.Events.Length)];
+        }
     }
 }
