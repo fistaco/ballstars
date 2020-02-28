@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace TeamBuilder.Entity
 {
     internal class Event
@@ -5,14 +7,14 @@ namespace TeamBuilder.Entity
         public int TeamOneId;
         public int TeamTwoId;
 
-        public SportsMatch[] Matches;
+        public List<SportsMatch> Matches;
 
         public Event(int teamOneId, int teamTwoId)
         {
             this.TeamOneId = teamOneId;
             this.TeamTwoId = teamTwoId;
             
-            this.Matches = new SportsMatch[3];
+            this.Matches = new List<SportsMatch>();
         }
     }
 }
