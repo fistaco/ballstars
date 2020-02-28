@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace TeamBuilder.Entity.EvolutionaryAlgorithm
@@ -7,11 +8,13 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         private int _amountOfRounds;
         
         private readonly string[] _teamNames;
+        private int _maxPlayersPerTeam;
 
-        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames)
+        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int maxPlayersPerTeam)
         {
             _amountOfRounds = amountOfRounds;
             _teamNames = teamNames;
+            _maxPlayersPerTeam = maxPlayersPerTeam;
         }
         
         public override void Run()
