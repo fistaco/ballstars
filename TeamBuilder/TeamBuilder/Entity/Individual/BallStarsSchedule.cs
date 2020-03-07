@@ -127,6 +127,15 @@ namespace TeamBuilder.Entity.Individual
             
         }
 
+        private void RemoveSportsMatch()
+        {
+            Event e = this.GetRandomEvent();
+            int i = Globals.Rand.Next(e.Matches.Count);
+
+            this.RemoveCategoryFromEventTeamStats(e, e.Matches[i].MatchType);
+            e.Matches[i] = null;
+        }
+
         public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
         {
             // Add a random SportsMatch from the pool to a random event in the schedule
