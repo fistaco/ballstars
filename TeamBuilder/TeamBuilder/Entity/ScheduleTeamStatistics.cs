@@ -11,6 +11,11 @@ namespace TeamBuilder.Entity
         /// Tracks this team's matches played during each round.
         /// </summary>
         public int[] MatchesPerRound;
+
+        /// <summary>
+        /// Tracks this team's amount of players allotted to each round by Events/SportsMatches.
+        /// </summary>
+        public int[] RoundPlayerCounts;
         
         /// <summary>
         /// Tracks the sports played by the team in the schedule.
@@ -66,6 +71,7 @@ namespace TeamBuilder.Entity
         {
             // Initialise all data structures based on the amount of teams and rounds
             MatchesPerRound = new int[amountOfRounds];
+            RoundPlayerCounts = new int[amountOfRounds];
             SportsPlayed = new HashSet<Sport>();
             TeamsPlayed = new HashSet<int>();
             

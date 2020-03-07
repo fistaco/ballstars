@@ -81,6 +81,52 @@ namespace TeamBuilder.Entity.Individual
             // For some SportsMatch, increment or decrement its player count by 1 // TODO: Implement player limits
         }
 
+        private void SwapSportsMatches()
+        {
+            // Generate indices and get SportsMatch objects
+            Event eventOne = this.GetRandomEvent();
+            int i1 = Globals.Rand.Next(eventOne.Matches.Count);
+            SportsMatch matchOne = eventOne.Matches[i1];
+            Event eventTwo = this.GetRandomEvent();
+            int i2 = Globals.Rand.Next(eventTwo.Matches.Count);
+            SportsMatch matchTwo = eventTwo.Matches[i2];
+            
+            // Only swap if the two matches have the same amount of players
+            if (matchOne.PlayersPerTeam != matchTwo.PlayersPerTeam)
+            {
+                return;
+            }
+
+            // Swap the SportsMatch objects
+            eventOne.Matches[i1] = eventTwo.Matches[i2];
+            eventTwo.Matches[i2] = matchOne;
+            
+            // Update stats
+            // Remove the current SportsMatches
+            this.RemoveCategoryFromEventTeamStats(eventOne, matchOne.MatchType);
+            this.RemoveCategoryFromEventTeamStats(eventTwo, matchTwo.MatchType);
+            // Add new SportsMatches
+            this.AddCategoryToEventTeamStats(eventOne, matchTwo.MatchType);
+            this.AddCategoryToEventTeamStats(eventTwo, matchOne.MatchType);
+        }
+
+        private void SwapEvents()
+        {
+            RoundPlanning r0 = this.GetRandomRound();
+            int i0 = Globals.Rand.Next(r0.Events.Length);
+            Event e0 = r0.Events[i0];
+            RoundPlanning r1 = this.GetRandomRound();
+            int i1 = Globals.Rand.Next(r1.Events.Length);
+
+            r0.Events[i0] = r1.Events[i1];
+            r1.Events[i1] = e0;
+        }
+
+        private void AddSportsMatch(SportsMatch match)
+        {
+            
+        }
+
         public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
         {
             // Add a random SportsMatch from the pool to a random event in the schedule
@@ -98,9 +144,26 @@ namespace TeamBuilder.Entity.Individual
             return this.Rounds[Globals.Rand.Next(this.Rounds.Length)];
         }
 
+        private Event GetRandomEvent()
+        {
+            return this.GetRandomRound().GetRandomEvent();
+        }
+
         private SportsMatch GetRandomSportsMatch()
         {
             return this.GetRandomRound().GetRandomEvent().GetRandomSportsMatch();
+        }
+
+        private void AddCategoryToEventTeamStats(Event evnt, SportsMatchCategory category)
+        {
+            _teamStats[evnt.TeamOneId].AddSportsCategoryPlayed(category);
+            _teamStats[evnt.TeamTwoId].AddSportsCategoryPlayed(category);
+        }
+        
+        private void RemoveCategoryFromEventTeamStats(Event evnt, SportsMatchCategory category)
+        {
+            _teamStats[evnt.TeamOneId].RemoveSportsCategoryPlayed(category);
+            _teamStats[evnt.TeamTwoId].RemoveSportsCategoryPlayed(category);
         }
 
         public override string ToString()
