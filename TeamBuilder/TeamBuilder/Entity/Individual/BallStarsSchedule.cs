@@ -69,10 +69,16 @@ namespace TeamBuilder.Entity.Individual
         {
             throw new System.NotImplementedException();
         }
-
+        
         public override void Mutate()
         {
             throw new System.NotImplementedException();
+            // With some probability, apply one of the following mutations:
+            // Add a random SportsMatch from the pool // Has to be done from the main loop
+            // Remove a random SportsMatch from the schedule
+            // Swap 2 random SportsMatch objects with identical player amounts within the schedule
+            // Swap 2 random Event objects between rounds
+            // For some SportsMatch, increment or decrement its player count by 1 // TODO: Implement player limits
         }
 
         public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
@@ -82,12 +88,19 @@ namespace TeamBuilder.Entity.Individual
             var match = SportsMatch.Random(matchPool);
             evnt.Matches.Add(match);
             
-            // Update the involved teams' statistics // TODO
+            // Update the involved teams' statistics
+            _teamStats[evnt.TeamOneId].AddSportsCategoryPlayed(match.MatchType);
+            _teamStats[evnt.TeamTwoId].AddSportsCategoryPlayed(match.MatchType);
         }
 
         private RoundPlanning GetRandomRound()
         {
             return this.Rounds[Globals.Rand.Next(this.Rounds.Length)];
+        }
+
+        private SportsMatch GetRandomSportsMatch()
+        {
+            return this.GetRandomRound().GetRandomEvent().GetRandomSportsMatch();
         }
 
         public override string ToString()

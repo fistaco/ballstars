@@ -18,6 +18,31 @@ namespace TeamBuilder.Entity
         public HashSet<Sport> SportsPlayed;
 
         /// <summary>
+        /// Tracks the sport imbalance of this team. The sport imbalance is represented as the maximum amount of times
+        /// a sport is played in the schedule minus the minimum amount any sport is played.
+        /// </summary>
+        public int SportImbalance;
+
+        private int _maxSportsPlayedCount = 0;
+        private int _minSportsPlayedCount = 0;
+        
+        /// <summary>
+        /// Track how many times this team plays each sport within the schedule.
+        /// </summary>
+        public Dictionary<SportsMatchCategory, int> SportsCategoryCounts = new Dictionary<SportsMatchCategory, int>()
+        {
+            {SportsMatchCategory.Badminton, 0},
+            {SportsMatchCategory.BadmintonDoubles, 0},
+            {SportsMatchCategory.Basketball, 0},
+            {SportsMatchCategory.Floorball, 0},
+            {SportsMatchCategory.Korfball, 0},
+            // {Sport.Squash, 0},
+            {SportsMatchCategory.TableTennis, 0},
+            {SportsMatchCategory.TableTennisDoubles, 0},
+            // {Sport.Volleyball, 0}
+        };
+
+        /// <summary>
         /// Tracks the other unique teams played by this team.
         /// </summary>
         public HashSet<int> TeamsPlayed;
@@ -50,17 +75,35 @@ namespace TeamBuilder.Entity
             AmountOfSportsPlayed = 0;
         }
 
-        public void AddSportPlayed(Sport sport)
+        public void AddSportsCategoryPlayed(SportsMatchCategory category)
         {
-            if (!SportsPlayed.Contains(sport))
+            this.SportsCategoryCounts[category]++;
+            
+            int newCount = this.SportsCategoryCounts[category];
+            if (newCount > _maxSportsPlayedCount)
             {
-                SportsPlayed.Add(sport);
-                AmountOfSportsPlayed++;
+                _maxSportsPlayedCount = newCount;
             }
+            
+            this.UpdateSportImbalance();
         }
 
-        public void RemoveSportPlayed(Sport sport)
+        public void RemoveSportsCategoryPlayed(SportsMatchCategory category)
         {
+            this.SportsCategoryCounts[category]--;
+
+            int newCount = this.SportsCategoryCounts[category];
+            if (newCount < _minSportsPlayedCount)
+            {
+                _minSportsPlayedCount = newCount;
+            }
+
+            this.UpdateSportImbalance();
+        }
+
+        private void UpdateSportImbalance()
+        {
+            this.SportImbalance = _maxSportsPlayedCount - _minSportsPlayedCount;
         }
     }
 }
