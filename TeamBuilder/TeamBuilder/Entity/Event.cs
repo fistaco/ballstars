@@ -35,5 +35,10 @@ namespace TeamBuilder.Entity
 
             return evnt;
         }
+
+        public SportsMatch GetRandomSportsMatch()
+        {
+            return this.Matches[Globals.Rand.Next(this.Matches.Count)];
+        }
     }
 }
