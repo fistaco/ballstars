@@ -114,15 +114,25 @@ namespace TeamBuilder.Entity.Individual
         private void SwapEvents()
         {
             // Get the required variables to swap an event from r0 with an event from r1
-            RoundPlanning r0 = this.GetRandomRound();
-            int i0 = Globals.Rand.Next(r0.Events.Length);
-            Event e0 = r0.Events[i0];
-            RoundPlanning r1 = this.GetRandomRound();
-            int i1 = Globals.Rand.Next(r1.Events.Length);
+            int r0Index = Globals.Rand.Next(this.Rounds.Length);
+            RoundPlanning r0 = this.Rounds[r0Index];
+            int e0Index = Globals.Rand.Next(r0.Events.Length);
+            Event e0 = r0.Events[e0Index];
+
+            int r1Index = Globals.Rand.Next(this.Rounds.Length);
+            RoundPlanning r1 = this.Rounds[r1Index];
+            int e1Index = Globals.Rand.Next(r1.Events.Length);
+            Event e1 = r1.Events[e1Index];
 
             // Swap
-            r0.Events[i0] = r1.Events[i1];
-            r1.Events[i1] = e0;
+            r0.Events[e0Index] = e1;
+            r1.Events[e1Index] = e0;
+            
+            // Update relevant team stats, i.e. each team's events played per round.
+            this.ModifyEventTeamsEventsPerRound(e0, r0Index, -1);
+            this.ModifyEventTeamsEventsPerRound(e0, r1Index, 1);
+            this.ModifyEventTeamsEventsPerRound(e1, r1Index, -1);
+            this.ModifyEventTeamsEventsPerRound(e1, r0Index, 1);
         }
 
         private void AddSportsMatchWithPlayerAmount(int playerAmount)
@@ -226,7 +236,19 @@ namespace TeamBuilder.Entity.Individual
             _teamStats[evnt.TeamOneId].UpdateAfterSportsMatchRemoval(match, roundIndex);
             _teamStats[evnt.TeamTwoId].UpdateAfterSportsMatchRemoval(match, roundIndex);
         }
-        
+
+        /// <summary>
+        /// Adds or removes a given amount to the count of events of a given round for both teams of a given event.
+        /// </summary>
+        /// <param name="evnt">The event of which the teams' statistics will be updated.</param>
+        /// <param name="roundIndex">The round in which an event was just added or removed.</param>
+        /// <param name="modification">The (possibly negative) amount of events added to the given round.</param>
+        private void ModifyEventTeamsEventsPerRound(Event evnt, int roundIndex, int modification)
+        {
+            _teamStats[evnt.TeamOneId].EventsPerRound[roundIndex] += modification;
+            _teamStats[evnt.TeamTwoId].EventsPerRound[roundIndex] += modification;
+        }
+
         private void AddCategoryToEventTeamStats(Event evnt, SportsMatchCategory category)
         {
             _teamStats[evnt.TeamOneId].AddSportsCategoryPlayed(category);
