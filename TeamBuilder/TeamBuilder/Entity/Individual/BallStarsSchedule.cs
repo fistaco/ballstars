@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TeamBuilder.Entity.Individual
 {
@@ -136,10 +137,29 @@ namespace TeamBuilder.Entity.Individual
             e.Matches[i] = null;
         }
 
+        private void ModifyRandomSportsMatchPlayerAmount(int modification)
+        {
+            Event evnt = this.GetRandomEvent();
+            SportsMatch match = evnt.GetRandomSportsMatch();
+            evnt.Matches.Add(match);
+            match.PlayersPerTeam -= modification;
+            
+        }
+
+        private void DecrementRandomSportsMatchPlayerAmount()
+        {
+            this.ModifyRandomSportsMatchPlayerAmount(-1);
+        }
+        
+        private void IncrementRandomSportsMatchPlayerAmount()
+        {
+            this.ModifyRandomSportsMatchPlayerAmount(1);
+        }
+
         public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
         {
             // Add a random SportsMatch from the pool to a random event in the schedule
-            Event evnt = this.GetRandomRound().GetRandomEvent();
+            Event evnt = this.GetRandomEvent();
             var match = SportsMatch.Random(matchPool);
             evnt.Matches.Add(match);
             
