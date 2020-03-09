@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TeamBuilder.Entity
 {
@@ -65,12 +66,12 @@ namespace TeamBuilder.Entity
         /// <summary>
         /// Tracks the amount of unique teams this team plays against in the schedule.
         /// </summary>
-        public int AmountOfTeamsPlayed;
+        public int AmountOfTeamsPlayed => TeamsPlayed.Count;
 
         /// <summary>
         /// Tracks the amount of unique sports played by this team in the schedule.
         /// </summary>
-        public int AmountOfSportsPlayed;
+        public int AmountOfSportsPlayed => SportsCategoryCounts.Count(pair => pair.Value > 0);
         
         public ScheduleTeamStatistics(int amountOfTeams, int amountOfRounds)
         {
@@ -83,8 +84,6 @@ namespace TeamBuilder.Entity
             
             // Initialise counters formally
             Breaks = 0;
-            AmountOfTeamsPlayed = 0;
-            AmountOfSportsPlayed = 0;
         }
 
         /// <summary>
