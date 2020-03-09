@@ -183,6 +183,8 @@ namespace TeamBuilder.Entity.Individual
             return this.GetRandomRound().GetRandomEvent().GetRandomSportsMatch();
         }
 
+        #region statusUpdates
+
         private void AddCategoryToEventTeamStats(Event evnt, SportsMatchCategory category)
         {
             _teamStats[evnt.TeamOneId].AddSportsCategoryPlayed(category);
@@ -194,6 +196,14 @@ namespace TeamBuilder.Entity.Individual
             _teamStats[evnt.TeamOneId].RemoveSportsCategoryPlayed(category);
             _teamStats[evnt.TeamTwoId].RemoveSportsCategoryPlayed(category);
         }
+
+        private void ModifyEventTeamStatsPlayerCounts(int roundIndex, Event evnt, int modification)
+        {
+            _teamStats[evnt.TeamOneId].RoundPlayerCounts[roundIndex] += modification;
+            _teamStats[evnt.TeamTwoId].RoundPlayerCounts[roundIndex] += modification;
+        }
+        
+        #endregion
 
         public override string ToString()
         {
