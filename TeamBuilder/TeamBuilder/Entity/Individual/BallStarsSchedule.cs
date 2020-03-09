@@ -11,6 +11,8 @@ namespace TeamBuilder.Entity.Individual
         private const int MediumEvalPenalty = 300;
         private const int HeavyEvalPenalty = 999;
 
+        private int _amountOfTeams;
+        
         /// <summary>
         /// Tracks each team's statistics for efficient usage during fitness evaluation.
         /// </summary>
@@ -25,7 +27,8 @@ namespace TeamBuilder.Entity.Individual
         public BallStarsSchedule(int amountOfRounds, int amountOfTeams)
         {
             this.Rounds = new RoundPlanning[amountOfRounds];
-            
+
+            _amountOfTeams = amountOfTeams;
             _teamStats = new ScheduleTeamStatistics[amountOfTeams];
             for (int i = 0; i < amountOfTeams; i++)
             {
@@ -128,7 +131,7 @@ namespace TeamBuilder.Entity.Individual
             r0.Events[e0Index] = e1;
             r1.Events[e1Index] = e0;
             
-            // Update relevant team stats, i.e. each team's events played per round.
+            // Update relevant team stats, i.e. each team's events played per round
             this.ModifyEventTeamsEventsPerRound(e0, r0Index, -1);
             this.ModifyEventTeamsEventsPerRound(e0, r1Index, 1);
             this.ModifyEventTeamsEventsPerRound(e1, r1Index, -1);
@@ -158,8 +161,8 @@ namespace TeamBuilder.Entity.Individual
         {
             (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex(); 
             
+            // Add the modification to a random match's player count
             SportsMatch match = evnt.GetRandomSportsMatch();
-            evnt.Matches.Add(match);
             match.PlayersPerTeam += modification;
             
             this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
@@ -175,13 +178,49 @@ namespace TeamBuilder.Entity.Individual
             this.ModifyRandomSportsMatchPlayerAmount(1);
         }
 
+        private void ReplaceEventTeam()
+        {
+            (Event e, int roundIndex) = this.GetRandomEventWithRoundIndex();
+
+            // Replace one of the event's teamIds with a random one
+            int randomTeamId = Globals.Rand.Next(_amountOfTeams);
+            if (Globals.Rand.Next(2) == 0)
+            {
+                this.ReplaceTeamId(ref e.TeamOneId, e.TeamTwoId, randomTeamId, roundIndex);
+            }
+            else
+            {
+                this.ReplaceTeamId(ref e.TeamTwoId, e.TeamOneId, randomTeamId, roundIndex);
+            }
+        }
+
+        /// <summary>
+        /// Replaces a given team id with another and updates the affected teams' stats within the schedule.
+        /// </summary>
+        /// <param name="teamToReplace">A reference to an event's team ID property to replace.</param>
+        /// <param name="opponent">The team ID of the original team's opponent in the event.</param>
+        /// <param name="replacement">The team ID that replaces another.</param>
+        /// <param name="roundIndex">The round in which the teams find each other in an event.</param>
+        private void ReplaceTeamId(ref int teamToReplace, int opponent, int replacement, int roundIndex)
+        {
+            // Replace teamId
+            int oldId = teamToReplace;
+            teamToReplace = replacement;
+            
+            // Update the affected teams' stats
+            _teamStats[replacement].UpdateAfterEventAddition(opponent, roundIndex);
+            _teamStats[oldId].UpdateAfterEventRemoval(opponent, roundIndex);
+            _teamStats[opponent].DecrementMatchUpCount(oldId);
+            _teamStats[opponent].IncrementMatchUpCount(replacement);
+        }
+
         public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
         {
             // Add a random SportsMatch from the pool to a random event in the schedule
             (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex();
             var match = SportsMatch.Random(matchPool);
             evnt.Matches.Add(match);
-            
+
             // Update the involved teams' statistics
             this.UpdateEventTeamStatsAfterSportsMatchAddition(roundIndex, evnt, match);
         }

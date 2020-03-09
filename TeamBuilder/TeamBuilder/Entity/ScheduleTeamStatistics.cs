@@ -54,9 +54,9 @@ namespace TeamBuilder.Entity
         };
 
         /// <summary>
-        /// Tracks the other unique teams played by this team.
+        /// Tracks how many times this team has played against each other team.
         /// </summary>
-        public HashSet<int> TeamsPlayed;
+        public int[] MatchUpCountsVersusTeams;
 
         /// <summary>
         /// Tracks the total amount of breaks this team has in the schedule.
@@ -66,7 +66,7 @@ namespace TeamBuilder.Entity
         /// <summary>
         /// Tracks the amount of unique teams this team plays against in the schedule.
         /// </summary>
-        public int AmountOfTeamsPlayed => TeamsPlayed.Count;
+        public int AmountOfTeamsPlayed;
 
         /// <summary>
         /// Tracks the amount of unique sports played by this team in the schedule.
@@ -80,10 +80,12 @@ namespace TeamBuilder.Entity
             RoundPlayerCounts = new int[amountOfRounds];
             EventsPerRound = new int[amountOfRounds];
             SportsPlayed = new HashSet<Sport>();
-            TeamsPlayed = new HashSet<int>();
+            // TeamsPlayed = new HashSet<int>();
+            MatchUpCountsVersusTeams = new int[amountOfTeams];
             
             // Initialise counters formally
             Breaks = 0;
+            AmountOfTeamsPlayed = 0;
         }
 
         /// <summary>
@@ -110,6 +112,18 @@ namespace TeamBuilder.Entity
             this.RoundPlayerCounts[roundIndex] -= match.PlayersPerTeam;
         }
 
+        public void UpdateAfterEventAddition(int opponent, int roundIndex)
+        {
+            this.IncrementMatchUpCount(opponent);
+            this.EventsPerRound[roundIndex]++;
+        }
+
+        public void UpdateAfterEventRemoval(int opponent, int roundIndex)
+        {
+            this.DecrementMatchUpCount(opponent);
+            this.EventsPerRound[roundIndex]--;
+        }
+
         public void AddSportsCategoryPlayed(SportsMatchCategory category)
         {
             this.SportsCategoryCounts[category]++;
@@ -134,6 +148,26 @@ namespace TeamBuilder.Entity
             }
 
             this.UpdateSportImbalance();
+        }
+
+        public void IncrementMatchUpCount(int opponent)
+        {
+            if (MatchUpCountsVersusTeams[opponent] == 0)
+            {
+                AmountOfTeamsPlayed++;
+            }
+
+            MatchUpCountsVersusTeams[opponent]++;
+        }
+        
+        public void DecrementMatchUpCount(int opponent)
+        {
+            if (this.MatchUpCountsVersusTeams[opponent] == 1)
+            {
+                AmountOfTeamsPlayed--;
+            }
+
+            MatchUpCountsVersusTeams[opponent]--;
         }
 
         private void UpdateSportImbalance()
