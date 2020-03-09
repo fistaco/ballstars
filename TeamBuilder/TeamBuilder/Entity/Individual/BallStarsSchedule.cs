@@ -85,30 +85,30 @@ namespace TeamBuilder.Entity.Individual
         private void SwapSportsMatches()
         {
             // Generate indices and get SportsMatch objects
-            Event eventOne = this.GetRandomEvent();
-            int i1 = Globals.Rand.Next(eventOne.Matches.Count);
-            SportsMatch matchOne = eventOne.Matches[i1];
-            Event eventTwo = this.GetRandomEvent();
-            int i2 = Globals.Rand.Next(eventTwo.Matches.Count);
-            SportsMatch matchTwo = eventTwo.Matches[i2];
+            (Event e0, int r0) = this.GetRandomEventWithRoundIndex();
+            int m0Index = Globals.Rand.Next(e0.Matches.Count);
+            SportsMatch m0 = e0.Matches[m0Index];
+            (Event e1, int r1) = this.GetRandomEventWithRoundIndex();
+            int m1Index = Globals.Rand.Next(e1.Matches.Count);
+            SportsMatch m1 = e1.Matches[m1Index];
             
             // Only swap if the two matches have the same amount of players
-            if (matchOne.PlayersPerTeam != matchTwo.PlayersPerTeam)
+            if (m0.PlayersPerTeam != m1.PlayersPerTeam)
             {
                 return;
             }
 
             // Swap the SportsMatch objects
-            eventOne.Matches[i1] = eventTwo.Matches[i2];
-            eventTwo.Matches[i2] = matchOne;
+            e0.Matches[m0Index] = m1;
+            e1.Matches[m1Index] = m0;
             
             // Update stats
             // Remove the current SportsMatches
-            this.RemoveCategoryFromEventTeamStats(eventOne, matchOne.MatchType);
-            this.RemoveCategoryFromEventTeamStats(eventTwo, matchTwo.MatchType);
+            this.UpdateEventTeamStatsAfterSportsMatchRemoval(r0, e0, m0);
+            this.UpdateEventTeamStatsAfterSportsMatchRemoval(r1, e1, m1);
             // Add new SportsMatches
-            this.AddCategoryToEventTeamStats(eventOne, matchTwo.MatchType);
-            this.AddCategoryToEventTeamStats(eventTwo, matchOne.MatchType);
+            this.UpdateEventTeamStatsAfterSportsMatchAddition(r0, e0, m1);
+            this.UpdateEventTeamStatsAfterSportsMatchAddition(r1, e1, m0);
         }
 
         private void SwapEvents()
@@ -205,13 +205,26 @@ namespace TeamBuilder.Entity.Individual
         /// Updates the round player counts and sports played for both teams of a given event based on the addition of a
         /// given SportsMatch.
         /// </summary>
-        /// <param name="roundIndex"></param>
-        /// <param name="evnt"></param>
-        /// <param name="match"></param>
+        /// <param name="roundIndex">The round in which the SportsMatch was added.</param>
+        /// <param name="evnt">The event to which the SportsMatch was added.</param>
+        /// <param name="match">The SportsMatch that was just added to the given event in the given round.</param>
         private void UpdateEventTeamStatsAfterSportsMatchAddition(int roundIndex, Event evnt, SportsMatch match)
         {
             _teamStats[evnt.TeamOneId].UpdateAfterSportsMatchAddition(match, roundIndex);
             _teamStats[evnt.TeamTwoId].UpdateAfterSportsMatchAddition(match, roundIndex);
+        }
+        
+        /// <summary>
+        /// Updates the round player counts and sports played for both teams of a given event based on the removal of a
+        /// given SportsMatch.
+        /// </summary>
+        /// <param name="roundIndex">The round in which the SportsMatch was removed.</param>
+        /// <param name="evnt">The event to which the SportsMatch was removed.</param>
+        /// <param name="match">The SportsMatch that was just removed from the given event in the given round.</param>
+        private void UpdateEventTeamStatsAfterSportsMatchRemoval(int roundIndex, Event evnt, SportsMatch match)
+        {
+            _teamStats[evnt.TeamOneId].UpdateAfterSportsMatchRemoval(match, roundIndex);
+            _teamStats[evnt.TeamTwoId].UpdateAfterSportsMatchRemoval(match, roundIndex);
         }
         
         private void AddCategoryToEventTeamStats(Event evnt, SportsMatchCategory category)
