@@ -141,7 +141,7 @@ namespace TeamBuilder.Entity.Individual
             int i = Globals.Rand.Next(e.Matches.Count);
 
             this.RemoveCategoryFromEventTeamStats(e, e.Matches[i].MatchType);
-            e.Matches[i] = null;
+            e.Matches.RemoveAt(i);
         }
 
         private void ModifyRandomSportsMatchPlayerAmount(int modification)
