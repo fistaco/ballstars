@@ -113,19 +113,26 @@ namespace TeamBuilder.Entity.Individual
 
         private void SwapEvents()
         {
+            // Get the required variables to swap an event from r0 with an event from r1
             RoundPlanning r0 = this.GetRandomRound();
             int i0 = Globals.Rand.Next(r0.Events.Length);
             Event e0 = r0.Events[i0];
             RoundPlanning r1 = this.GetRandomRound();
             int i1 = Globals.Rand.Next(r1.Events.Length);
 
+            // Swap
             r0.Events[i0] = r1.Events[i1];
             r1.Events[i1] = e0;
         }
 
-        private void AddSportsMatch(SportsMatch match)
+        private void AddSportsMatchWithPlayerAmount(int playerAmount)
         {
-            
+            throw new NotImplementedException();
+        }
+
+        private void RemoveSportsMatchWithPlayerAmount(int playerAmount)
+        {
+            throw new NotImplementedException();
         }
 
         private void RemoveSportsMatch()
