@@ -168,13 +168,12 @@ namespace TeamBuilder.Entity.Individual
         public void AddSportsMatchFromPool(List<SportsMatch> matchPool)
         {
             // Add a random SportsMatch from the pool to a random event in the schedule
-            Event evnt = this.GetRandomEvent();
+            (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex();
             var match = SportsMatch.Random(matchPool);
             evnt.Matches.Add(match);
             
             // Update the involved teams' statistics
-            _teamStats[evnt.TeamOneId].AddSportsCategoryPlayed(match.MatchType);
-            _teamStats[evnt.TeamTwoId].AddSportsCategoryPlayed(match.MatchType);
+            this.UpdateEventTeamStatsAfterSportsMatchAddition(roundIndex, evnt, match);
         }
 
         private RoundPlanning GetRandomRound()
@@ -202,6 +201,19 @@ namespace TeamBuilder.Entity.Individual
 
         #region statusUpdates
 
+        /// <summary>
+        /// Updates the round player counts and sports played for both teams of a given event based on the addition of a
+        /// given SportsMatch.
+        /// </summary>
+        /// <param name="roundIndex"></param>
+        /// <param name="evnt"></param>
+        /// <param name="match"></param>
+        private void UpdateEventTeamStatsAfterSportsMatchAddition(int roundIndex, Event evnt, SportsMatch match)
+        {
+            _teamStats[evnt.TeamOneId].UpdateAfterSportsMatchAddition(match, roundIndex);
+            _teamStats[evnt.TeamTwoId].UpdateAfterSportsMatchAddition(match, roundIndex);
+        }
+        
         private void AddCategoryToEventTeamStats(Event evnt, SportsMatchCategory category)
         {
             _teamStats[evnt.TeamOneId].AddSportsCategoryPlayed(category);

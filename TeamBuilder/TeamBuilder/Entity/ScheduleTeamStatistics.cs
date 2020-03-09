@@ -81,12 +81,24 @@ namespace TeamBuilder.Entity
             AmountOfSportsPlayed = 0;
         }
 
+        /// <summary>
+        /// Updates this team's sports played and player count per round based on the addition of a given SportsMatch in
+        /// a given round.
+        /// </summary>
+        /// <param name="match">The SportsMatch that has just been scheduled for this team.</param>
+        /// <param name="roundIndex">The number of the round in which the given match was added.</param>
         public void UpdateAfterSportsMatchAddition(SportsMatch match, int roundIndex)
         {
             this.AddSportsCategoryPlayed(match.MatchType);
             this.RoundPlayerCounts[roundIndex] += match.PlayersPerTeam;
         }
 
+        /// <summary>
+        /// Updates this team's sports played and player count per round based on the removal of a given SportsMatch in
+        /// a given round.
+        /// </summary>
+        /// <param name="match">The SportsMatch that has just been scheduled for this team.</param>
+        /// <param name="roundIndex">The number of the round in which the given match was added.</param>
         public void UpdateAfterSportsMatchRemoval(SportsMatch match, int roundIndex)
         {
             this.RemoveSportsCategoryPlayed(match.MatchType);
