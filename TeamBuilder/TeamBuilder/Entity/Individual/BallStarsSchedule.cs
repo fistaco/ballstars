@@ -18,6 +18,7 @@ namespace TeamBuilder.Entity.Individual
         /// </summary>
         private ScheduleTeamStatistics[] _teamStats; // TODO: Update team stats after random schedule generation
 
+        private Dictionary<Action, double> _mutationMethodProbabilities;
 
         /// <summary>
         /// Constructs an empty BallStarsSchedule with an initialised, but undefined array of a given number of rounds.
@@ -34,6 +35,16 @@ namespace TeamBuilder.Entity.Individual
             {
                 _teamStats[i] = new ScheduleTeamStatistics(amountOfTeams, amountOfRounds);
             }
+            
+            _mutationMethodProbabilities = new Dictionary<Action, double>()
+            {
+                { SwapSportsMatches, 0.7 },
+                { SwapEvents, 0.5 },
+                { RemoveSportsMatch, 0.5 },
+                { IncrementRandomSportsMatchPlayerAmount, 0.7 },
+                { DecrementRandomSportsMatchPlayerAmount, 0.7 },
+                { ReplaceEventTeam, 0.5 },
+            };
         }
 
         /// <summary>
@@ -76,13 +87,22 @@ namespace TeamBuilder.Entity.Individual
         
         public override void Mutate()
         {
-            throw new System.NotImplementedException();
             // With some probability, apply one of the following mutations:
             // Add a random SportsMatch from the pool // Has to be done from the main loop
             // Remove a random SportsMatch from the schedule
             // Swap 2 random SportsMatch objects with identical player amounts within the schedule
             // Swap 2 random Event objects between rounds
             // For some SportsMatch, increment or decrement its player count by 1 // TODO: Implement player limits
+            foreach (KeyValuePair<Action, double> pair in _mutationMethodProbabilities)
+            {
+                Action mutationMethod = pair.Key;
+                Double prob = pair.Value;
+
+                if (Globals.Rand.NextDouble() < prob)
+                {
+                    mutationMethod();
+                }
+            }
         }
 
         private void SwapSportsMatches()
@@ -168,14 +188,14 @@ namespace TeamBuilder.Entity.Individual
             this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
         }
 
-        private void DecrementRandomSportsMatchPlayerAmount()
-        {
-            this.ModifyRandomSportsMatchPlayerAmount(-1);
-        }
-        
         private void IncrementRandomSportsMatchPlayerAmount()
         {
             this.ModifyRandomSportsMatchPlayerAmount(1);
+        }
+
+        private void DecrementRandomSportsMatchPlayerAmount()
+        {
+            this.ModifyRandomSportsMatchPlayerAmount(-1);
         }
 
         private void ReplaceEventTeam()
