@@ -147,11 +147,11 @@ namespace TeamBuilder.Entity.Individual
 
         private void RemoveSportsMatch()
         {
-            Event e = this.GetRandomEvent();
-            int i = Globals.Rand.Next(e.Matches.Count);
-
-            this.RemoveCategoryFromEventTeamStats(e, e.Matches[i].MatchType);
-            e.Matches.RemoveAt(i);
+            (Event e, int roundIndex) = this.GetRandomEventWithRoundIndex();
+            int matchIndex = Globals.Rand.Next(e.Matches.Count);
+            
+            this.UpdateEventTeamStatsAfterSportsMatchRemoval(roundIndex, e, e.Matches[matchIndex]);
+            e.Matches.RemoveAt(matchIndex);
         }
 
         private void ModifyRandomSportsMatchPlayerAmount(int modification)
