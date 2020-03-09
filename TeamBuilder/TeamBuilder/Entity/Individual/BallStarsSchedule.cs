@@ -146,11 +146,13 @@ namespace TeamBuilder.Entity.Individual
 
         private void ModifyRandomSportsMatchPlayerAmount(int modification)
         {
-            Event evnt = this.GetRandomEvent();
+            (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex(); 
+            
             SportsMatch match = evnt.GetRandomSportsMatch();
             evnt.Matches.Add(match);
-            match.PlayersPerTeam -= modification;
+            match.PlayersPerTeam += modification;
             
+            this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
         }
 
         private void DecrementRandomSportsMatchPlayerAmount()
@@ -183,6 +185,14 @@ namespace TeamBuilder.Entity.Individual
         private Event GetRandomEvent()
         {
             return this.GetRandomRound().GetRandomEvent();
+        }
+
+        private (Event, int) GetRandomEventWithRoundIndex()
+        {
+            int i = Globals.Rand.Next(this.Rounds.Length);
+            Event e = this.Rounds[i].GetRandomEvent();
+
+            return (e, i);
         }
 
         private SportsMatch GetRandomSportsMatch()
