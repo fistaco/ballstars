@@ -7,10 +7,16 @@ namespace TeamBuilder.Entity
         public SportsMatchCategory MatchType;
         public int PlayersPerTeam;
 
-        public SportsMatch(SportsMatchCategory matchType, int playersPerTeam)
+        public int LowerPlayerLimit;
+        public int UpperPlayerLimit;
+
+        public SportsMatch(SportsMatchCategory matchType, int playersPerTeam, int minPlayers = 2, int maxPlayers = 8)
         {
             this.MatchType = matchType;
             this.PlayersPerTeam = playersPerTeam;
+
+            this.LowerPlayerLimit = minPlayers;
+            this.UpperPlayerLimit = maxPlayers;
         }
 
         /// <summary>
