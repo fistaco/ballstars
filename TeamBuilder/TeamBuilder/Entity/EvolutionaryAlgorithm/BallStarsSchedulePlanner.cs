@@ -45,17 +45,25 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             {
                 Console.WriteLine($"Commencing generation {currentGen}.");
 
-                // Create offspring by randomly mutating the existing population
+                // Create offspring by applying crossover to the existing population
                 var offspring = new List<BallStarsSchedule>();
                 foreach (var individual in population)
                 {
                     // TODO: Use crossover to create offspring
                 }
-                // TODO: Randomly apply mutation
+                // Mutate the offspring
+                foreach (var schedule in population)
+                {
+                    if (Globals.Rand.NextDouble() < 0.5)
+                    {
+                        schedule.AddSportsMatchFromPool(_matchPool);
+                    }
+                    schedule.Mutate();
+                }
                 
                 // Evaluate both the population and the offspring
-                population.ForEach(teamSet => teamSet.Evaluate());
-                offspring.ForEach(teamSet => teamSet.Evaluate());
+                population.ForEach(schedule => schedule.Evaluate());
+                offspring.ForEach(schedule => schedule.Evaluate());
                 
                 // Select the best n individuals out of the population + offspring
                 population = NaiveSelection(population, offspring);
