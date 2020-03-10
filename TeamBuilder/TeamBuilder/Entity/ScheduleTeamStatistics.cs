@@ -38,14 +38,16 @@ namespace TeamBuilder.Entity
         /// The largest amount of times any sport is played by this team within the schedule.
         /// </summary>
         private int _maxSportsPlayedCount = 0;
-        
+
+        private SportsMatchCategory _maxPlayedCategory = SportsMatchCategory.Badminton;
+
         /// <summary>
         /// The smallest amount of times any sport is played by this team within the schedule.
         /// </summary>
         private int _minSportsPlayedCount = 0;
 
-        public bool PlayedEachSport = false;
-        
+        private SportsMatchCategory _minPlayedCategory = SportsMatchCategory.Basketball;
+
         /// <summary>
         /// Track how many times this team plays each sport within the schedule.
         /// </summary>
@@ -162,11 +164,18 @@ namespace TeamBuilder.Entity
             
             this.SportsCategoryCounts[category]++;
             
+            // If this category was the least played one, we may have to find a new smallest element
+            if (category == _minPlayedCategory)
+            {
+                UpdateLeastPlayedCategory();
+            }
+            
             // Update _maxSportsPlayedCount if this category is now played more than any other category
             int newCount = this.SportsCategoryCounts[category];
             if (newCount > _maxSportsPlayedCount)
             {
                 _maxSportsPlayedCount = newCount;
+                _maxPlayedCategory = category;
             }
 
             this.UpdateSportImbalance();
@@ -182,11 +191,18 @@ namespace TeamBuilder.Entity
             }
             
             this.SportsCategoryCounts[category]--;
+            
+            // If this category was the most played one, we may have to find a new largest element
+            if (category == _maxPlayedCategory)
+            {
+                UpdateMostPlayedCategory();
+            }
 
             int newCount = this.SportsCategoryCounts[category];
             if (newCount < _minSportsPlayedCount)
             {
                 _minSportsPlayedCount = newCount;
+                _minPlayedCategory = category;
             }
 
             this.UpdateSportImbalance();
@@ -227,6 +243,32 @@ namespace TeamBuilder.Entity
         private void UpdateSportsCoveragePenalty()
         {
             SportsCoveragePenalty = _sportsToPlay - AmountOfSportsPlayed;
+        }
+
+        private void UpdateLeastPlayedCategory()
+        {
+            int smallest = 999;
+            foreach (KeyValuePair<SportsMatchCategory, int> pair in SportsCategoryCounts)
+            {
+                if (pair.Value < smallest)
+                {
+                    _minSportsPlayedCount = pair.Value;
+                    _minPlayedCategory = pair.Key;
+                }
+            }
+        }
+        
+        private void UpdateMostPlayedCategory()
+        {
+            int largest = -1;
+            foreach (KeyValuePair<SportsMatchCategory, int> pair in SportsCategoryCounts)
+            {
+                if (pair.Value > largest)
+                {
+                    _maxSportsPlayedCount = pair.Value;
+                    _maxPlayedCategory = pair.Key;
+                }
+            }
         }
     }
 }
