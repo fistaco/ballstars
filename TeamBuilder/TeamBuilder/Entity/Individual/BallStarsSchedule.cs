@@ -87,7 +87,7 @@ namespace TeamBuilder.Entity.Individual
             fitness += _teamStats.Sum(teamStats => teamStats.EventLimitPenalty); // Aim for 1 event per round
             // Aim for exactly _playersPerTeam players allotted for each event
             fitness += _teamStats.Sum(teamStats => teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam));
-            // Aim for the correct SportsMatch limits. Should probably enforce this during mutation & crossover instead.
+            // Aim for the correct sports limits, e.g. max. 8 people playing table tennis at any given time // TODO
 
             this.Fitness = fitness;
             return fitness;
