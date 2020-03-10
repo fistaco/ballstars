@@ -192,13 +192,16 @@ namespace TeamBuilder.Entity.Individual
 
         private void ModifyRandomSportsMatchPlayerAmount(int modification)
         {
-            (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex(); 
-            
-            // Add the modification to a random match's player count
+            (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex();
             SportsMatch match = evnt.GetRandomSportsMatch();
-            match.PlayersPerTeam += modification;
             
-            this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
+            // Add the modification to a random match's player count, but only if it's within the allowed limits
+            int modifiedPlayerAmount = match.PlayersPerTeam + modification;
+            if (match.PlayerAmountIsAllowed(modifiedPlayerAmount))
+            { 
+                match.PlayersPerTeam = modifiedPlayerAmount;
+                this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
+            }
         }
 
         private void IncrementRandomSportsMatchPlayerAmount()

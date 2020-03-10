@@ -111,26 +111,47 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         
         private List<SportsMatch> InitialiseMatchPool()
         {
+            int badmintonMin = 1;
+            int badmintonDoublesMin = 2;
+            int basketballMin = 5;
+            int floorballMin = 4;
+            int tableTennisMin = 1;
+            int tableTennisDoublesMin = 2;
+            int squashMin = 1;
+            int volleyballMin = 6;
+            int korfballMin = 4;
+            
+            int badmintonMax = 2;
+            int badmintonDoublesMax = 4;
+            int basketballMax = 6;
+            int floorballMax = 6;
+            int tableTennisMax = 3;
+            int tableTennisDoublesMax = 4;
+            int squashMax = 3;
+            int volleyballMax = 7;
+            int korfballMax = 6;
+
             // Each match has a category and an amount of players to be allotted per team
             return new List<SportsMatch>()
             {
-                new SportsMatch(SportsMatchCategory.Badminton, 1),
-                new SportsMatch(SportsMatchCategory.Badminton, 2),
-                new SportsMatch(SportsMatchCategory.BadmintonDoubles, 2),
-                new SportsMatch(SportsMatchCategory.Basketball, 5),
-                new SportsMatch(SportsMatchCategory.Basketball, 6), // 1 reserve
-                new SportsMatch(SportsMatchCategory.Floorball, 4),
-                new SportsMatch(SportsMatchCategory.Floorball, 5),
-                new SportsMatch(SportsMatchCategory.Korfball, 8),
-                new SportsMatch(SportsMatchCategory.Squash, 1),
-                new SportsMatch(SportsMatchCategory.Squash, 2),
-                new SportsMatch(SportsMatchCategory.Squash, 3),
-                new SportsMatch(SportsMatchCategory.TableTennis, 1),
-                new SportsMatch(SportsMatchCategory.TableTennis, 2),
-                new SportsMatch(SportsMatchCategory.TableTennis, 3),
-                new SportsMatch(SportsMatchCategory.TableTennisDoubles, 2),
-                new SportsMatch(SportsMatchCategory.Volleyball, 6),
-                new SportsMatch(SportsMatchCategory.Referee, 1)
+                new SportsMatch(SportsMatchCategory.Badminton, 1, badmintonMin, badmintonMax),
+                new SportsMatch(SportsMatchCategory.Badminton, 2, badmintonMin, badmintonMax),
+                new SportsMatch(SportsMatchCategory.BadmintonDoubles, 2, badmintonDoublesMin, badmintonDoublesMax),
+                new SportsMatch(SportsMatchCategory.Basketball, 5, basketballMin, basketballMax),
+                new SportsMatch(SportsMatchCategory.Basketball, 6, basketballMin, basketballMax), // 1 reserve
+                new SportsMatch(SportsMatchCategory.Floorball, 4, floorballMin, floorballMax),
+                new SportsMatch(SportsMatchCategory.Floorball, 5, floorballMin, floorballMax),
+                new SportsMatch(SportsMatchCategory.Korfball, 4, korfballMin, korfballMax),
+                // new SportsMatch(SportsMatchCategory.Korfball, 8, korfballMin, korfballMax),
+                // new SportsMatch(SportsMatchCategory.Squash, 1, squashMin, squashMax),
+                // new SportsMatch(SportsMatchCategory.Squash, 2, squashMin, squashMax),
+                // new SportsMatch(SportsMatchCategory.Squash, 3, squashMin, squashMax),
+                // new SportsMatch(SportsMatchCategory.TableTennis, 1),
+                new SportsMatch(SportsMatchCategory.TableTennis, 2, tableTennisMin, tableTennisMax),
+                new SportsMatch(SportsMatchCategory.TableTennis, 3, tableTennisMin, tableTennisMax),
+                new SportsMatch(SportsMatchCategory.TableTennisDoubles, 2, tableTennisDoublesMin, tableTennisDoublesMax),
+                // new SportsMatch(SportsMatchCategory.Volleyball, 6, volleyballMin, volleyballMax),
+                // new SportsMatch(SportsMatchCategory.Referee, 1, 1, 1)
             };
         }
 

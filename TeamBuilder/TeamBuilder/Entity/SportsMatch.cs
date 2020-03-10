@@ -10,7 +10,7 @@ namespace TeamBuilder.Entity
         public int LowerPlayerLimit;
         public int UpperPlayerLimit;
 
-        public SportsMatch(SportsMatchCategory matchType, int playersPerTeam, int minPlayers = 2, int maxPlayers = 8)
+        public SportsMatch(SportsMatchCategory matchType, int playersPerTeam, int minPlayers = 1, int maxPlayers = 8)
         {
             this.MatchType = matchType;
             this.PlayersPerTeam = playersPerTeam;
@@ -28,7 +28,12 @@ namespace TeamBuilder.Entity
             int randIndex = Globals.Rand.Next(0, matchPool.Count);
             return matchPool[randIndex]; // TODO: Check if cloning is necessary
         }
-        
+
+        public bool PlayerAmountIsAllowed(int newPlayerAmount)
+        {
+            return newPlayerAmount >= LowerPlayerLimit && newPlayerAmount <= UpperPlayerLimit;
+        }
+
         /// <summary>
         /// Returns a copy of this SportsMatch object.
         /// </summary>
