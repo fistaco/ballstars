@@ -104,7 +104,7 @@ namespace TeamBuilder.Entity
         /// </summary>
         public int SportsCoveragePenalty;
 
-        private int _sportsToPlay;
+        private readonly int _sportsToPlay;
         
         public ScheduleTeamStatistics(int amountOfTeams, int amountOfRounds)
         {
@@ -275,6 +275,11 @@ namespace TeamBuilder.Entity
                     _maxPlayedCategory = pair.Key;
                 }
             }
+        }
+
+        public int RoundPlayerLimitPenalty(int playersPerTeam)
+        {
+            return RoundPlayerCounts.Sum(count => (playersPerTeam - count).Abs());
         }
     }
 }

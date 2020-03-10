@@ -11,19 +11,19 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         
         private readonly string[] _teamNames;
         private readonly int _amountOfTeams;
-        private readonly int _maxPlayersPerTeam;
+        private readonly int _avgPlayersPerTeam;
 
         private readonly List<SportsMatch> _matchPool;
 
         private readonly string _outputFile;
 
-        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int maxPlayersPerTeam,
+        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int avgPlayersPerTeam,
             string outputFile)
         {
             _amountOfRounds = amountOfRounds;
             _teamNames = teamNames;
             _amountOfTeams = teamNames.Length;
-            _maxPlayersPerTeam = maxPlayersPerTeam;
+            _avgPlayersPerTeam = avgPlayersPerTeam;
 
             _matchPool = this.InitialiseMatchPool();
 
@@ -146,7 +146,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             for (int i = 0; i < amountOfIndividuals; i++)
             {
                 population.Add(BallStarsSchedule.Random(
-                    _amountOfTeams, eventsPerRound, regularEventsPerRound, _amountOfRounds, _matchPool, addBreakRound
+                    _amountOfTeams, eventsPerRound, regularEventsPerRound, _amountOfRounds, _matchPool, addBreakRound,
+                    _avgPlayersPerTeam
                 ));
             }
 

@@ -12,6 +12,8 @@ namespace TeamBuilder.Entity.Individual
         private const int HeavyEvalPenalty = 999;
 
         private readonly int _amountOfTeams;
+
+        private readonly int _avgPlayersPerTeam;
         
         /// <summary>
         /// Tracks each team's statistics for efficient usage during fitness evaluation.
@@ -25,11 +27,13 @@ namespace TeamBuilder.Entity.Individual
         /// </summary>
         /// <param name="amountOfRounds"></param>
         /// <param name="amountOfTeams"></param>
-        public BallStarsSchedule(int amountOfRounds, int amountOfTeams)
+        public BallStarsSchedule(int amountOfRounds, int amountOfTeams, int avgPlayersPerTeam)
         {
             this.Rounds = new RoundPlanning[amountOfRounds];
 
             _amountOfTeams = amountOfTeams;
+            _avgPlayersPerTeam = avgPlayersPerTeam;
+
             _teamStats = new ScheduleTeamStatistics[amountOfTeams];
             for (int i = 0; i < amountOfTeams; i++)
             {
@@ -57,10 +61,11 @@ namespace TeamBuilder.Entity.Individual
         /// <param name="amountOfRounds"></param>
         /// <param name="matchPool"></param>
         /// <param name="breakRound"></param>
+        /// <param name="avgPlayersPerTeam"></param>
         public static BallStarsSchedule Random(int amountOfTeams, int amountOfEvents, int amountOfRegularEvents,
-            int amountOfRounds, List<SportsMatch> matchPool, bool breakRound)
+            int amountOfRounds, List<SportsMatch> matchPool, bool breakRound, int avgPlayersPerTeam)
         {
-            var schedule = new BallStarsSchedule(amountOfRounds, amountOfTeams);
+            var schedule = new BallStarsSchedule(amountOfRounds, amountOfTeams, avgPlayersPerTeam);
 
             // TODO: Incorporate maxPlayersPerTeam instead of leaving it to the evaluation method
             for (int i = 0; i < amountOfRounds; i++)
@@ -81,6 +86,7 @@ namespace TeamBuilder.Entity.Individual
             fitness += _teamStats.Sum(teamStats => teamStats.SportsCoveragePenalty); // Play each sport at least once
             fitness += _teamStats.Sum(teamStats => teamStats.EventLimitPenalty); // Aim for 1 event per round
             // Aim for exactly _playersPerTeam players allotted for each event
+            fitness += _teamStats.Sum(teamStats => teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam));
             // Aim for the correct SportsMatch limits. Should probably enforce this during mutation & crossover instead.
 
             this.Fitness = fitness;
