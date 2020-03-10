@@ -72,6 +72,14 @@ namespace TeamBuilder.Entity
         /// Tracks the amount of unique sports played by this team in the schedule.
         /// </summary>
         public int AmountOfSportsPlayed => SportsCategoryCounts.Count(pair => pair.Value > 0);
+
+        /// <summary>
+        /// The penalty this team receives due to not having played enough other unique teams. This is equal to
+        /// _teamsToPlay - AmountOfTeamsPlayed.
+        /// </summary>
+        public int TeamCoveragePenalty;
+
+        private int _teamsToPlay;
         
         public ScheduleTeamStatistics(int amountOfTeams, int amountOfRounds)
         {
@@ -80,12 +88,13 @@ namespace TeamBuilder.Entity
             RoundPlayerCounts = new int[amountOfRounds];
             EventsPerRound = new int[amountOfRounds];
             SportsPlayed = new HashSet<Sport>();
-            // TeamsPlayed = new HashSet<int>();
             MatchUpCountsVersusTeams = new int[amountOfTeams];
             
             // Initialise counters formally
             Breaks = 0;
             AmountOfTeamsPlayed = 0;
+
+            _teamsToPlay = amountOfTeams - 1;
         }
 
         /// <summary>
@@ -155,6 +164,7 @@ namespace TeamBuilder.Entity
             if (MatchUpCountsVersusTeams[opponent] == 0)
             {
                 AmountOfTeamsPlayed++;
+                UpdateTeamCoveragePenalty();
             }
 
             MatchUpCountsVersusTeams[opponent]++;
@@ -165,6 +175,7 @@ namespace TeamBuilder.Entity
             if (this.MatchUpCountsVersusTeams[opponent] == 1)
             {
                 AmountOfTeamsPlayed--;
+                UpdateTeamCoveragePenalty();
             }
 
             MatchUpCountsVersusTeams[opponent]--;
@@ -173,6 +184,11 @@ namespace TeamBuilder.Entity
         private void UpdateSportImbalance()
         {
             this.SportImbalance = _maxSportsPlayedCount - _minSportsPlayedCount;
+        }
+
+        private void UpdateTeamCoveragePenalty()
+        {
+            TeamCoveragePenalty = _teamsToPlay = AmountOfTeamsPlayed;
         }
     }
 }

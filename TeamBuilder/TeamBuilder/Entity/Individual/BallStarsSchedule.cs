@@ -11,7 +11,7 @@ namespace TeamBuilder.Entity.Individual
         private const int MediumEvalPenalty = 300;
         private const int HeavyEvalPenalty = 999;
 
-        private int _amountOfTeams;
+        private readonly int _amountOfTeams;
         
         /// <summary>
         /// Tracks each team's statistics for efficient usage during fitness evaluation.
@@ -74,7 +74,9 @@ namespace TeamBuilder.Entity.Individual
 
         public override float Evaluate()
         {
-            int fitness = 7;
+            int fitness = 0;
+            // TODO: Test/check if scaling by squaring is useful for some of the penalties
+            fitness += _teamStats.Sum(teamStat => teamStat.TeamCoveragePenalty);
 
             this.Fitness = fitness;
             return fitness;
