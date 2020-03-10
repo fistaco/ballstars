@@ -76,7 +76,9 @@ namespace TeamBuilder.Entity.Individual
         {
             int fitness = 0;
             // TODO: Test/check if scaling by squaring is useful for some of the penalties
-            fitness += _teamStats.Sum(teamStat => teamStat.TeamCoveragePenalty);
+            fitness += _teamStats.Sum(teamStats => teamStats.TeamCoveragePenalty); // Play each team at least once
+            fitness += _teamStats.Sum(teamStats => teamStats.SportImbalance); // Keep the sports played balanced
+            fitness += _teamStats.Sum(teamStats => teamStats.SportsCoveragePenalty); // Play each sport at least once
 
             this.Fitness = fitness;
             return fitness;

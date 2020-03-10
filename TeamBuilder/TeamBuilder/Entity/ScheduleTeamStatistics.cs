@@ -34,8 +34,17 @@ namespace TeamBuilder.Entity
         /// </summary>
         public int SportImbalance;
 
+        /// <summary>
+        /// The largest amount of times any sport is played by this team within the schedule.
+        /// </summary>
         private int _maxSportsPlayedCount = 0;
+        
+        /// <summary>
+        /// The smallest amount of times any sport is played by this team within the schedule.
+        /// </summary>
         private int _minSportsPlayedCount = 0;
+
+        public bool PlayedEachSport = false;
         
         /// <summary>
         /// Track how many times this team plays each sport within the schedule.
@@ -71,7 +80,7 @@ namespace TeamBuilder.Entity
         /// <summary>
         /// Tracks the amount of unique sports played by this team in the schedule.
         /// </summary>
-        public int AmountOfSportsPlayed => SportsCategoryCounts.Count(pair => pair.Value > 0);
+        public int AmountOfSportsPlayed;
 
         /// <summary>
         /// The penalty this team receives due to not having played enough other unique teams. This is equal to
@@ -80,6 +89,14 @@ namespace TeamBuilder.Entity
         public int TeamCoveragePenalty;
 
         private int _teamsToPlay;
+
+        /// <summary>
+        /// The penalty this team receives due to not having played all sports at least once. This is equal to
+        /// _sportsToPlay - AmountOfSportsPlayed.
+        /// </summary>
+        public int SportsCoveragePenalty;
+
+        private int _sportsToPlay;
         
         public ScheduleTeamStatistics(int amountOfTeams, int amountOfRounds)
         {
@@ -95,6 +112,7 @@ namespace TeamBuilder.Entity
             AmountOfTeamsPlayed = 0;
 
             _teamsToPlay = amountOfTeams - 1;
+            _sportsToPlay = SportsCategoryCounts.Count;
         }
 
         /// <summary>
@@ -135,19 +153,34 @@ namespace TeamBuilder.Entity
 
         public void AddSportsCategoryPlayed(SportsMatchCategory category)
         {
+            // Update amount of sports played if this is the first time this sport is played by this team
+            if (this.SportsCategoryCounts[category] == 0)
+            {
+                AmountOfSportsPlayed++;
+                UpdateSportsCoveragePenalty();
+            }
+            
             this.SportsCategoryCounts[category]++;
             
+            // Update _maxSportsPlayedCount if this category is now played more than any other category
             int newCount = this.SportsCategoryCounts[category];
             if (newCount > _maxSportsPlayedCount)
             {
                 _maxSportsPlayedCount = newCount;
             }
-            
+
             this.UpdateSportImbalance();
         }
 
         public void RemoveSportsCategoryPlayed(SportsMatchCategory category)
         {
+            // Update amount of sports played if this sport was only played once
+            if (this.SportsCategoryCounts[category] == 1)
+            {
+                AmountOfSportsPlayed--;
+                UpdateSportsCoveragePenalty();
+            }
+            
             this.SportsCategoryCounts[category]--;
 
             int newCount = this.SportsCategoryCounts[category];
@@ -188,7 +221,12 @@ namespace TeamBuilder.Entity
 
         private void UpdateTeamCoveragePenalty()
         {
-            TeamCoveragePenalty = _teamsToPlay = AmountOfTeamsPlayed;
+            TeamCoveragePenalty = _teamsToPlay - AmountOfTeamsPlayed;
+        }
+
+        private void UpdateSportsCoveragePenalty()
+        {
+            SportsCoveragePenalty = _sportsToPlay - AmountOfSportsPlayed;
         }
     }
 }
