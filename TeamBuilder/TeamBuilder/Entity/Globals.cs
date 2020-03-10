@@ -57,5 +57,15 @@ namespace TeamBuilder.Entity
 
             return list;
         }
+
+        /// <summary>
+        /// Returns the absolute value of given integer.
+        /// </summary>
+        /// <param name="i">The integer of which the caller wants the absolute value.</param>
+        /// <returns>The absolute value of the given integer.</returns>
+        public static int Abs(this int i)
+        {
+            return i < 0 ? i * -1 : i;
+        }
     }
 }

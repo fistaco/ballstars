@@ -22,6 +22,12 @@ namespace TeamBuilder.Entity
         /// Tracks the amount of events this team plays in for each round.
         /// </summary>
         public int[] EventsPerRound;
+
+        // TODO: Incrementally update the penalty
+        /// <summary>
+        /// Tracks this team's penalty incurred due to not having exactly 1 event per round.
+        /// </summary>
+        public int EventLimitPenalty => EventsPerRound.Sum(eventsInRound => (eventsInRound - 1).Abs());
         
         /// <summary>
         /// Tracks the sports played by the team in the schedule.

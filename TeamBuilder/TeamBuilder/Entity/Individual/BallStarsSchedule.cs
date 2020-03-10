@@ -79,6 +79,9 @@ namespace TeamBuilder.Entity.Individual
             fitness += _teamStats.Sum(teamStats => teamStats.TeamCoveragePenalty); // Play each team at least once
             fitness += _teamStats.Sum(teamStats => teamStats.SportImbalance); // Keep the sports played balanced
             fitness += _teamStats.Sum(teamStats => teamStats.SportsCoveragePenalty); // Play each sport at least once
+            fitness += _teamStats.Sum(teamStats => teamStats.EventLimitPenalty); // Aim for 1 event per round
+            // Aim for exactly _playersPerTeam players allotted for each event
+            // Aim for the correct SportsMatch limits. Should probably enforce this during mutation & crossover instead.
 
             this.Fitness = fitness;
             return fitness;
