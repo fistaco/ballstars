@@ -79,14 +79,14 @@ namespace TeamBuilder.Entity.Individual
 
         public override float Evaluate()
         {
-            int fitness = 0;
             // TODO: Test/check if scaling by squaring is useful for some of the penalties
-            fitness += _teamStats.Sum(teamStats => teamStats.TeamCoveragePenalty); // Play each team at least once
-            fitness += _teamStats.Sum(teamStats => teamStats.SportImbalance); // Keep the sports played balanced
-            fitness += _teamStats.Sum(teamStats => teamStats.SportsCoveragePenalty); // Play each sport at least once
-            fitness += _teamStats.Sum(teamStats => teamStats.EventLimitPenalty); // Aim for 1 event per round
-            // Aim for exactly _playersPerTeam players allotted for each event
-            fitness += _teamStats.Sum(teamStats => teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam));
+            int fitness = _teamStats.Sum(
+                teamStats => teamStats.TeamCoveragePenalty +   // Play each team at least once
+                             teamStats.SportImbalance +        // Keep the sports played balanced
+                             teamStats.SportsCoveragePenalty + // Play each sport at least once
+                             teamStats.EventLimitPenalty +     // Aim for 1 event per round
+                             teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam) // Regulate #players for each event
+            );
 
             this.Fitness = fitness;
             return fitness;
