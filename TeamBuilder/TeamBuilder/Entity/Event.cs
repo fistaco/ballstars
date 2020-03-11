@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TeamBuilder.Entity
 {
@@ -39,6 +40,12 @@ namespace TeamBuilder.Entity
         public SportsMatch GetRandomSportsMatch()
         {
             return this.Matches[Globals.Rand.Next(this.Matches.Count)];
+        }
+
+        public override string ToString()
+        {
+            string matches =  Matches.Select(m => m.ToString()).Aggregate((result, matchString) => $"{result} {matchString}");
+            return $"{TeamOneId} - {TeamTwoId}: {matches}";
         }
     }
 }
