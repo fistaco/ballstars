@@ -87,7 +87,6 @@ namespace TeamBuilder.Entity.Individual
             fitness += _teamStats.Sum(teamStats => teamStats.EventLimitPenalty); // Aim for 1 event per round
             // Aim for exactly _playersPerTeam players allotted for each event
             fitness += _teamStats.Sum(teamStats => teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam));
-            // Aim for the correct sports limits, e.g. max. 8 people playing table tennis at any given time // TODO
 
             this.Fitness = fitness;
             return fitness;
@@ -128,8 +127,9 @@ namespace TeamBuilder.Entity.Individual
             int m1Index = Globals.Rand.Next(e1.Matches.Count);
             SportsMatch m1 = e1.Matches[m1Index];
             
-            // Only swap if the two matches have the same amount of players
-            if (m0.PlayersPerTeam != m1.PlayersPerTeam)
+            // Only swap if the two matches have the same amount of players and the round's sport limits allow for it
+            bool legalSwap = Rounds[r0].LegalSportsMatchSwap(m0, m1) && Rounds[r1].LegalSportsMatchSwap(m1, m0);
+            if (m0.PlayersPerTeam != m1.PlayersPerTeam || !legalSwap)
             {
                 return;
             }
@@ -139,6 +139,12 @@ namespace TeamBuilder.Entity.Individual
             e1.Matches[m1Index] = m0;
             
             // Update stats
+            // Update players per match type in the affected rounds
+            Rounds[r0].ModifyPlayerAssignment(m0.MatchType, -m0.PlayersPerTeam);
+            Rounds[r1].ModifyPlayerAssignment(m1.MatchType, -m1.PlayersPerTeam);
+            Rounds[r0].ModifyPlayerAssignment(m1.MatchType, m1.PlayersPerTeam);
+            Rounds[r1].ModifyPlayerAssignment(m0.MatchType, m0.PlayersPerTeam);
+
             // Remove the current SportsMatches
             this.UpdateEventTeamStatsAfterSportsMatchRemoval(r0, e0, m0);
             this.UpdateEventTeamStatsAfterSportsMatchRemoval(r1, e1, m1);
@@ -197,7 +203,10 @@ namespace TeamBuilder.Entity.Individual
             
             // Add the modification to a random match's player count, but only if it's within the allowed limits
             int modifiedPlayerAmount = match.PlayersPerTeam + modification;
-            if (match.PlayerAmountIsAllowed(modifiedPlayerAmount))
+            bool matchAllowsModification = match.PlayerAmountIsAllowed(modifiedPlayerAmount);
+            bool roundAllowsModification =
+                Rounds[roundIndex].ModifyPlayerAssignmentIfWithinLimit(match.MatchType, modification);
+            if (matchAllowsModification && roundAllowsModification)
             { 
                 match.PlayersPerTeam = modifiedPlayerAmount;
                 this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
@@ -255,10 +264,15 @@ namespace TeamBuilder.Entity.Individual
             // Add a random SportsMatch from the pool to a random event in the schedule
             (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex();
             var match = SportsMatch.Random(matchPool);
-            evnt.Matches.Add(match);
 
-            // Update the involved teams' statistics
-            this.UpdateEventTeamStatsAfterSportsMatchAddition(roundIndex, evnt, match);
+            // Only add the match if the sports facilities have enough capacity during the round
+            if (Rounds[roundIndex].ModifyPlayerAssignmentIfWithinLimit(match.MatchType, match.PlayersPerTeam))
+            {
+                evnt.Matches.Add(match);
+
+                // Update the involved teams' statistics
+                this.UpdateEventTeamStatsAfterSportsMatchAddition(roundIndex, evnt, match);
+            }
         }
 
         private RoundPlanning GetRandomRound()

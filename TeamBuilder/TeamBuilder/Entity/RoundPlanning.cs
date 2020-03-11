@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TeamBuilder.Entity.Individual;
 
 namespace TeamBuilder.Entity
@@ -6,6 +7,25 @@ namespace TeamBuilder.Entity
     internal class RoundPlanning
     {
         public Event[] Events;
+
+        public int RefereesRequired = 3;
+
+        /// <summary>
+        /// The amount of players assigned to each sport during this round, divided by 2 to track allocations per team.
+        /// </summary>
+        public Dictionary<SportsMatchCategory, int> PlayersPerMatchType = new Dictionary<SportsMatchCategory, int>()
+        {
+            { SportsMatchCategory.Badminton, 0 },
+            { SportsMatchCategory.BadmintonDoubles, 0 },
+            { SportsMatchCategory.Basketball, 0 },
+            { SportsMatchCategory.Floorball, 0 },
+            { SportsMatchCategory.Korfball, 0 },
+            // { SportsMatchCategory.Squash, 0 },
+            { SportsMatchCategory.TableTennis, 0 },
+            { SportsMatchCategory.TableTennisDoubles, 0 },
+            // { SportsMatchCategory.Volleyball, 0 },
+            { SportsMatchCategory.Referee, 0 }
+        };
 
         /// <summary>
         /// Constructs a new Round with an empty Event array for a given amount of events.
@@ -53,6 +73,49 @@ namespace TeamBuilder.Entity
         public Event GetRandomEvent()
         {
             return this.Events[Globals.Rand.Next(this.Events.Length)];
+        }
+
+        public bool ModifyPlayerAssignmentIfWithinLimit(SportsMatchCategory category, int modification)
+        {
+            int newAmount = PlayersPerMatchType[category] + modification;
+            bool legalAssignment = newAmount <= Globals.MatchTypePlayerLimitsPerTeam[category];
+
+            if (legalAssignment)
+            {
+                PlayersPerMatchType[category] = newAmount;
+            }
+            
+            return legalAssignment;
+        }
+
+        public bool LegalPlayerAssignment(SportsMatchCategory category, int modification)
+        {
+            return PlayersPerMatchType[category] + modification <= Globals.MatchTypePlayerLimitsPerTeam[category];
+        }
+
+        public void ModifyPlayerAssignment(SportsMatchCategory category, int modification)
+        {
+            PlayersPerMatchType[category] += modification;
+        }
+
+        public bool LegalSportsMatchSwap(SportsMatch old, SportsMatch @new)
+        {
+            if (old.MatchType == @new.MatchType)
+            {
+                return LegalPlayerAssignment(old.MatchType, @new.PlayersPerTeam - old.PlayersPerTeam);
+            }
+            
+            int oldCategoryNewAmount = PlayersPerMatchType[old.MatchType] - old.PlayersPerTeam;
+            int newCategoryNewAmount = PlayersPerMatchType[@new.MatchType] + @new.PlayersPerTeam;
+
+            return oldCategoryNewAmount <= Globals.MatchTypePlayerLimitsPerTeam[old.MatchType] &&
+                   newCategoryNewAmount <= Globals.MatchTypePlayerLimitsPerTeam[@new.MatchType];
+        }
+
+        public int RefereePenalty()
+        {
+            // Require referees for basketball, floorball, korfball, and volleyball matches.
+            return (RefereesRequired - PlayersPerMatchType[SportsMatchCategory.Referee]).Abs();
         }
     }
 }

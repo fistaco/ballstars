@@ -19,19 +19,21 @@ namespace TeamBuilder.Entity
             { "Volleyball", Sport.Volleyball }
         };
         
-        public static readonly Dictionary<SportsMatchCategory, int> MatchTypePlayerLimits =
+        /// <summary>
+        /// The per-team player limits for each sports category during each round.
+        /// </summary>
+        public static readonly Dictionary<SportsMatchCategory, int> MatchTypePlayerLimitsPerTeam =
             new Dictionary<SportsMatchCategory, int>()
         {
-            { SportsMatchCategory.Badminton, 4 }, // 2 singles
-            { SportsMatchCategory.Basketball, 24 }, // 5v5 + reserves on 2 courts
-            { SportsMatchCategory.BadmintonDoubles, 4 },
-            { SportsMatchCategory.Floorball, 10 }, // 4v4 on mini-court + reserves
-            { SportsMatchCategory.Korfball, 16 }, // 8v8
-            // { SportsMatchCategory.Referee, 3 } 
+            { SportsMatchCategory.Badminton, 1 }, // 1 single
+            { SportsMatchCategory.BadmintonDoubles, 4 }, // 2 doubles
+            { SportsMatchCategory.Basketball, 12 }, // 5v5 + reserves on 2 courts
+            { SportsMatchCategory.Korfball, 6 }, // 4v4 + possible reserves or 6v6
+            // { SportsMatchCategory.Referee, 3 },  
             { SportsMatchCategory.Squash, 8 }, // 4 singles
-            { SportsMatchCategory.TableTennis, 10 }, // 3 singles + 1 doubles
-            { SportsMatchCategory.Volleyball, 12 }, // 6v6
-            { SportsMatchCategory.Basketball, 12 }, // 5v5 + reserve
+            { SportsMatchCategory.TableTennis, 3 }, // 3 singles
+            { SportsMatchCategory.TableTennisDoubles, 2}, // 1 doubles
+            { SportsMatchCategory.Volleyball, 6 }, // 6v6
             { SportsMatchCategory.Break, 10 }, // One team can take a break at a time.
         };
 
