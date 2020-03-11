@@ -27,6 +27,7 @@ namespace TeamBuilder.Entity.Individual
         /// </summary>
         /// <param name="amountOfRounds"></param>
         /// <param name="amountOfTeams"></param>
+        /// <param name="avgPlayersPerTeam"></param>
         public BallStarsSchedule(int amountOfRounds, int amountOfTeams, int avgPlayersPerTeam)
         {
             this.Rounds = new RoundPlanning[amountOfRounds];
@@ -49,6 +50,27 @@ namespace TeamBuilder.Entity.Individual
                 { DecrementRandomSportsMatchPlayerAmount, 0.7 },
                 { ReplaceEventTeam, 0.5 },
             };
+        }
+
+        /// <summary>
+        /// Constructs a full BallStarsSchedule with given values that are assumed to be coherent with the given team
+        /// statistics. 
+        /// </summary>
+        /// <param name="rounds"></param>
+        /// <param name="amountOfTeams"></param>
+        /// <param name="avgPlayersPerTeam"></param>
+        /// <param name="teamStats"></param>
+        /// <param name="mutationMethodProbabilities"></param>
+        public BallStarsSchedule(RoundPlanning[] rounds, int amountOfTeams, int avgPlayersPerTeam,
+            ScheduleTeamStatistics[] teamStats, Dictionary<Action, double> mutationMethodProbabilities)
+        {
+            this.Rounds = rounds;
+
+            _amountOfTeams = amountOfTeams;
+            _avgPlayersPerTeam = avgPlayersPerTeam;
+            
+            _teamStats = teamStats;
+            _mutationMethodProbabilities = mutationMethodProbabilities;
         }
 
         /// <summary>
@@ -357,6 +379,12 @@ namespace TeamBuilder.Entity.Individual
         }
         
         #endregion
+
+        public BallStarsSchedule Clone()
+        {
+            return new BallStarsSchedule(
+                this.Rounds, _amountOfTeams, _avgPlayersPerTeam, _teamStats, _mutationMethodProbabilities);
+        }
 
         public override string ToString()
         {

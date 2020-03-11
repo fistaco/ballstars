@@ -49,10 +49,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 var offspring = new List<BallStarsSchedule>();
                 foreach (var individual in population)
                 {
-                    // TODO: Use crossover to create offspring
+                    // TODO: Use crossover to create offspring instead of cloning
+                    BallStarsSchedule clone = individual.Clone();
+                    offspring.Add(clone);
                 }
                 // Mutate the offspring
-                foreach (var schedule in population)
+                foreach (var schedule in offspring)
                 {
                     if (Globals.Rand.NextDouble() < 0.5)
                     {
