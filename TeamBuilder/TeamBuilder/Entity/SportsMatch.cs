@@ -10,13 +10,18 @@ namespace TeamBuilder.Entity
         public int LowerPlayerLimit;
         public int UpperPlayerLimit;
 
-        public SportsMatch(SportsMatchCategory matchType, int playersPerTeam, int minPlayers = 1, int maxPlayers = 8)
+        public bool RefereeRequired;
+
+        public SportsMatch(SportsMatchCategory matchType, int playersPerTeam, int minPlayers = 1, int maxPlayers = 8,
+            bool refereeRequired = false)
         {
             this.MatchType = matchType;
             this.PlayersPerTeam = playersPerTeam;
 
             this.LowerPlayerLimit = minPlayers;
             this.UpperPlayerLimit = maxPlayers;
+
+            this.RefereeRequired = refereeRequired;
         }
 
         /// <summary>
