@@ -49,7 +49,6 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 foreach (var individual in population)
                 {
                     BallStarsTeamSet clone = individual.Clone();
-                    // BallStarsTeamSet clone = individual.CloneBySerialisation();
                     clone.Mutate();
                     offspring.Add(clone);
                 }
