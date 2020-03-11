@@ -47,5 +47,10 @@ namespace TeamBuilder.Entity
         {
             return new SportsMatch(this.MatchType, this.PlayersPerTeam);
         }
+
+        public override string ToString()
+        {
+            return $"{MatchType} ×{PlayersPerTeam}";
+        }
     }
 }

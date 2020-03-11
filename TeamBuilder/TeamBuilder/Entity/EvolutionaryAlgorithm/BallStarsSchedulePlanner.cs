@@ -45,6 +45,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             {
                 Console.WriteLine($"Commencing generation {currentGen}.");
 
+                Console.WriteLine("Cloning...");
                 // Create offspring by applying crossover to the existing population
                 var offspring = new List<BallStarsSchedule>();
                 foreach (var individual in population)
@@ -53,6 +54,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     BallStarsSchedule clone = individual.Clone();
                     offspring.Add(clone);
                 }
+                Console.WriteLine(("Mutating..."));
                 // Mutate the offspring
                 foreach (var schedule in offspring)
                 {
@@ -63,10 +65,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     schedule.Mutate();
                 }
                 
+                Console.WriteLine("Evaluating...");
                 // Evaluate both the population and the offspring
                 population.ForEach(schedule => schedule.Evaluate());
                 offspring.ForEach(schedule => schedule.Evaluate());
                 
+                Console.WriteLine("Selecting best individuals...");
                 // Select the best n individuals out of the population + offspring
                 population = NaiveSelection(population, offspring);
 
@@ -87,10 +91,10 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 currentGen++;
             }
 
-            // Save the best solution to a file
-            bestSolution.SaveToCsv(_outputFile);
-            Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
-
+            // // Save the best solution to a file // TODO
+            // bestSolution.SaveToCsv(_outputFile);
+            // Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
+            Console.WriteLine("Algorithm finished.");
         }
 
         /// <summary>
