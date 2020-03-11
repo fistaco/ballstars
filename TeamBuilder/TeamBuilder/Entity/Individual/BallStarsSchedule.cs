@@ -388,7 +388,15 @@ namespace TeamBuilder.Entity.Individual
 
         public override string ToString()
         {
-            return base.ToString();
+            string result = "";
+            for (int i = 0; i < Rounds.Length; i++)
+            {
+                RoundPlanning round = Rounds[i];
+                result += $"Round {i}:\n==========\n";
+                result += $"{round}\n";
+            }
+
+            return result;
         }
 
         public void SaveToCsv(string outputFile)

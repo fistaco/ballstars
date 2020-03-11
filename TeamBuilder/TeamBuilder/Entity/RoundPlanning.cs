@@ -117,5 +117,10 @@ namespace TeamBuilder.Entity
             // Require referees for basketball, floorball, korfball, and volleyball matches.
             return (RefereesRequired - PlayersPerMatchType[SportsMatchCategory.Referee]).Abs();
         }
+
+        public override string ToString()
+        {
+            return Events.Select(e => e.ToString()).Aggregate((result, eventString) => $"{result}\n{eventString}");
+        }
     }
 }
