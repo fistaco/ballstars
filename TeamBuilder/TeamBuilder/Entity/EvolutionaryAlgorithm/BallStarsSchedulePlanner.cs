@@ -179,8 +179,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             int eventsPerRound = addBreakRound ? _amountOfTeams / 2 + 1 : _amountOfTeams / 2;
             int regularEventsPerRound = addBreakRound ? eventsPerRound - 1 : eventsPerRound;
             
-            Console.WriteLine($"-> Creating {amountOfIndividuals} schedules with {_amountOfTeams} teams and " +
-                              $"{eventsPerRound} events per round.");
+            Console.WriteLine($"-> Creating {amountOfIndividuals} schedules with {_amountOfTeams} teams, " +
+                              $"{_amountOfRounds} rounds, and {eventsPerRound} events per round.");
             for (int i = 0; i < amountOfIndividuals; i++)
             {
                 population.Add(BallStarsSchedule.Random(
