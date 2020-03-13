@@ -16,12 +16,12 @@ namespace TeamBuilder.Entity
         /// <summary>
         /// Tracks this team's amount of players allotted to each round by Events/SportsMatches.
         /// </summary>
-        public int[] RoundPlayerCounts;
+        public readonly int[] RoundPlayerCounts;
 
         /// <summary>
         /// Tracks the amount of events this team plays in for each round.
         /// </summary>
-        public int[] EventsPerRound;
+        public readonly int[] EventsPerRound;
 
         // TODO: Incrementally update the penalty
         /// <summary>
@@ -73,7 +73,7 @@ namespace TeamBuilder.Entity
         /// <summary>
         /// Tracks how many times this team has played against each other team.
         /// </summary>
-        public int[] MatchUpCountsVersusTeams;
+        public readonly int[] MatchUpCountsVersusTeams;
 
         /// <summary>
         /// Tracks the total amount of breaks this team has in the schedule.
@@ -96,7 +96,7 @@ namespace TeamBuilder.Entity
         /// </summary>
         public int TeamCoveragePenalty;
 
-        private int _teamsToPlay;
+        private readonly int _teamsToPlay;
 
         /// <summary>
         /// The penalty this team receives due to not having played all sports at least once. This is equal to
