@@ -203,9 +203,16 @@ namespace TeamBuilder.Entity.Individual
             // Generate indices and get SportsMatch objects
             (Event e0, int r0) = this.GetRandomEventWithRoundIndex();
             int m0Index = Globals.Rand.Next(e0.Matches.Count);
-            SportsMatch m0 = e0.Matches[m0Index];
             (Event e1, int r1) = this.GetRandomEventWithRoundIndex();
             int m1Index = Globals.Rand.Next(e1.Matches.Count);
+            
+            // Quit if either event has no matches to swap
+            if (e0.Matches.Count == 0 || e1.Matches.Count == 0)
+            {
+                return;
+            }
+
+            SportsMatch m0 = e0.Matches[m0Index];
             SportsMatch m1 = e1.Matches[m1Index];
             
             // Only swap if the two matches have the same amount of players and the round's sport limits allow for it
