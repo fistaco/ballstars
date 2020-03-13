@@ -23,15 +23,35 @@ namespace TeamBuilder.Entity
             this.Matches = new List<SportsMatch>();
         }
 
-        public static Event Random(int teamOneId, int teamTwoId, List<SportsMatch> matchPool)
+        /// <summary>
+        /// Constructs an Event with a random amount of sports matches where the amount of participating players remains
+        /// under the limit if one is given.
+        /// </summary>
+        /// <param name="teamOneId"></param>
+        /// <param name="teamTwoId"></param>
+        /// <param name="matchPool"></param>
+        /// <param name="avgPlayersPerTeam"></param>
+        /// <returns></returns>
+        public static Event Random(int teamOneId, int teamTwoId, List<SportsMatch> matchPool, int avgPlayersPerTeam)
         {
             var evnt = new Event(teamOneId, teamTwoId);
             
             // Add 1 to 3 random SportsMatch objects from the given pool.
             int amountToAdd = Globals.Rand.Next(1, 4);
+            int allocatedPlayers = 0;
             for (int i = 0; i < amountToAdd; i++)
             {
-                evnt.Matches.Add(SportsMatch.Random(matchPool));
+                SportsMatch match = SportsMatch.Random(matchPool);
+
+                // Check if the new match would stay within player limits
+                int newPlayerCount = allocatedPlayers + match.PlayersPerTeam;
+                if (newPlayerCount > avgPlayersPerTeam)
+                {
+                    break;
+                }
+
+                evnt.Matches.Add(match);
+                allocatedPlayers = newPlayerCount;
             }
 
             return evnt;

@@ -48,7 +48,7 @@ namespace TeamBuilder.Entity
         }
 
         public static RoundPlanning Random(int amountOfTeams, int amountOfEvents, int amountOfRegularEvents,
-            List<SportsMatch> matchPool, bool breakRound = false)
+            List<SportsMatch> matchPool, int avgPlayersPerTeam, bool breakRound = false)
         {
             var round = new RoundPlanning(amountOfEvents);
 
@@ -58,7 +58,7 @@ namespace TeamBuilder.Entity
                 int t0 = Globals.Rand.Next(0, amountOfTeams);
                 int t1 = Globals.Rand.Next(0, amountOfTeams);
 
-                round.Events[i] = Event.Random(t0, t1, matchPool);
+                round.Events[i] = Event.Random(t0, t1, matchPool, avgPlayersPerTeam);
             }
             // Generate a break event if the amount of teams is odd.
             if (breakRound)

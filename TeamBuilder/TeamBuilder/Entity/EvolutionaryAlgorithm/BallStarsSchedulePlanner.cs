@@ -54,7 +54,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     BallStarsSchedule clone = individual.Clone();
                     offspring.Add(clone);
                 }
-                Console.WriteLine(("Mutating..."));
+                Console.WriteLine("Mutating...");
                 // Mutate the offspring
                 foreach (var schedule in offspring)
                 {
@@ -94,7 +94,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             // // Save the best solution to a file // TODO
             // bestSolution.SaveToCsv(_outputFile);
             // Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
-            Console.WriteLine("Algorithm finished.");
+            Console.WriteLine($"Algorithm finished. The best schedule is as follows:\n{bestSolution}");
         }
 
         /// <summary>
@@ -131,8 +131,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             int floorballMin = 4;
             int tableTennisMin = 1;
             int tableTennisDoublesMin = 2;
-            int squashMin = 1;
-            int volleyballMin = 6;
+            // int squashMin = 1;
+            // int volleyballMin = 6;
             int korfballMin = 4;
             
             int badmintonMax = 2;
@@ -141,8 +141,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             int floorballMax = 6;
             int tableTennisMax = 3;
             int tableTennisDoublesMax = 4;
-            int squashMax = 3;
-            int volleyballMax = 7;
+            // int squashMax = 3;
+            // int volleyballMax = 7;
             int korfballMax = 6;
 
             // Each match has a category and an amount of players to be allotted per team
@@ -179,6 +179,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             int eventsPerRound = addBreakRound ? _amountOfTeams / 2 + 1 : _amountOfTeams / 2;
             int regularEventsPerRound = addBreakRound ? eventsPerRound - 1 : eventsPerRound;
             
+            Console.WriteLine($"-> Creating {amountOfIndividuals} schedules with {_amountOfTeams} teams and " +
+                              $"{eventsPerRound} events per round.");
             for (int i = 0; i < amountOfIndividuals; i++)
             {
                 population.Add(BallStarsSchedule.Random(

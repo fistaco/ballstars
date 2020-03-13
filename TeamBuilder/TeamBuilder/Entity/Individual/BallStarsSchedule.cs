@@ -93,10 +93,69 @@ namespace TeamBuilder.Entity.Individual
             for (int i = 0; i < amountOfRounds; i++)
             {
                 schedule.Rounds[i] = RoundPlanning.Random(amountOfTeams, amountOfEvents, amountOfRegularEvents,
-                    matchPool, breakRound);
+                    matchPool, avgPlayersPerTeam, breakRound);
             }
+            // Update all team statistics based on the rounds' contents
+            for (int i = 0; i < amountOfTeams; i++)
+            {
+                for (int j = 0; j < amountOfRounds; j++)
+                {
+                    schedule.UpdateTeamStats(i, j);
+                }
+            }
+            schedule.UpdateRoundPlayerCounts();
             
             return schedule;
+        }
+
+        /// <summary>
+        /// Fully initialises this schedule's team statistics for the given team based on the given round. Note that
+        /// the player counts per round should be updated separately.
+        /// </summary>
+        /// <param name="teamIndex"></param>
+        /// <param name="roundIndex"></param>
+        public void UpdateTeamStats(int teamIndex, int roundIndex)
+        {
+            ScheduleTeamStatistics teamStats = _teamStats[teamIndex];
+            RoundPlanning round = this.Rounds[roundIndex];
+
+            // Update team statistics for each event and match in which the given team participates
+            foreach (Event e in round.Events)
+            {
+                // Determine the opponent's team ID
+                bool givenTeamIsTeamOne = e.TeamOneId == teamIndex;
+                bool givenTeamIsTeamTwo = e.TeamTwoId == teamIndex;
+                int opponentId = givenTeamIsTeamOne ? e.TeamTwoId : e.TeamOneId;
+                // Continue if the given team is not involved in this event.
+                if (!givenTeamIsTeamOne && !givenTeamIsTeamTwo)
+                {
+                    continue;
+                }
+
+                // The team is involved in the event, so update all relevant statistics
+                teamStats.UpdateAfterEventAddition(opponentId, roundIndex);
+                foreach (SportsMatch match in e.Matches)
+                {
+                    teamStats.UpdateAfterSportsMatchAddition(match, roundIndex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the player counts for each category based on this schedule's sports matches.
+        /// </summary>
+        private void UpdateRoundPlayerCounts()
+        {
+            foreach (RoundPlanning round in Rounds)
+            {
+                foreach (Event e in round.Events)
+                {
+                    foreach (SportsMatch match in e.Matches)
+                    {
+                        round.ModifyPlayerAssignment(match.MatchType, match.PlayersPerTeam);
+                    }
+                }
+            }
         }
 
         public override float Evaluate()
@@ -382,6 +441,7 @@ namespace TeamBuilder.Entity.Individual
 
         public BallStarsSchedule Clone()
         {
+            // TODO: Check if deep copying is required. Probably is, because lists are passed by reference.
             return new BallStarsSchedule(
                 this.Rounds, _amountOfTeams, _avgPlayersPerTeam, _teamStats, _mutationMethodProbabilities);
         }
