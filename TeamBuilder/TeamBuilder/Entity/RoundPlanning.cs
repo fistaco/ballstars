@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TeamBuilder.Entity.Individual;
@@ -121,6 +122,17 @@ namespace TeamBuilder.Entity
         public override string ToString()
         {
             return Events.Select(e => e.ToString()).Aggregate((result, eventString) => $"{result}\n{eventString}");
+        }
+
+        public RoundPlanning Clone()
+        {
+            RoundPlanning clone = new RoundPlanning(this.Events.Length) { RefereesRequired = this.RefereesRequired };
+            for (int i = 0; i < this.Events.Length; i++)
+            {
+                clone.Events[i] = this.Events[i].Clone();
+            }
+
+            return clone;
         }
     }
 }

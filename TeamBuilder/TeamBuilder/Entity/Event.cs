@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,10 +62,22 @@ namespace TeamBuilder.Entity
         {
             return this.Matches[Globals.Rand.Next(this.Matches.Count)];
         }
+        
+        public Event Clone()
+        {
+            Event clone = new Event(TeamOneId, TeamTwoId);
+            foreach (SportsMatch match in this.Matches)
+            {
+                clone.Matches.Add(match.Clone());
+            }
+
+            return clone;
+        }
 
         public override string ToString()
         {
-            string matches =  Matches.Select(m => m.ToString()).Aggregate((result, matchString) => $"{result} {matchString}");
+            // string matches =  Matches.Select(m => m.ToString()).Aggregate((result, matchString) => $"{result} {matchString}");
+            string matches = string.Join(" ", Matches.Select(m => m.ToString()));
             return $"{TeamOneId} - {TeamTwoId}: {matches}";
         }
     }

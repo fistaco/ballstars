@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,11 +29,6 @@ namespace TeamBuilder.Entity
         /// Tracks this team's penalty incurred due to not having exactly 1 event per round.
         /// </summary>
         public int EventLimitPenalty => EventsPerRound.Sum(eventsInRound => (eventsInRound - 1).Abs());
-        
-        /// <summary>
-        /// Tracks the sports played by the team in the schedule.
-        /// </summary>
-        public HashSet<Sport> SportsPlayed;
 
         /// <summary>
         /// Tracks the sport imbalance of this team. The sport imbalance is represented as the maximum amount of times
@@ -105,14 +101,13 @@ namespace TeamBuilder.Entity
         public int SportsCoveragePenalty;
 
         private readonly int _sportsToPlay;
-        
+
         public ScheduleTeamStatistics(int amountOfTeams, int amountOfRounds)
         {
             // Initialise all data structures based on the amount of teams and rounds
             MatchesPerRound = new int[amountOfRounds];
             RoundPlayerCounts = new int[amountOfRounds];
             EventsPerRound = new int[amountOfRounds];
-            SportsPlayed = new HashSet<Sport>();
             MatchUpCountsVersusTeams = new int[amountOfTeams];
             
             // Initialise counters formally
@@ -121,6 +116,30 @@ namespace TeamBuilder.Entity
 
             _teamsToPlay = amountOfTeams - 1;
             _sportsToPlay = SportsCategoryCounts.Count;
+        }
+
+        public ScheduleTeamStatistics(int[] roundPlayerCounts, int[] eventsPerRound, int sportImbalance,
+            int maxSportsPlayedCount, SportsMatchCategory maxPlayedCategory, int minSportsPlayedCount,
+            SportsMatchCategory minPlayedCategory, Dictionary<SportsMatchCategory, int> sportsCategoryCounts,
+            int[] matchUpCountsVersusTeams, int breaks, int amountOfTeamsPlayed, int amountOfSportsPlayed,
+            int teamCoveragePenalty, int sportsCoveragePenalty, int sportsToPlay)
+        {
+            RoundPlayerCounts = roundPlayerCounts;
+            EventsPerRound = eventsPerRound;
+            SportImbalance = sportImbalance;
+            _maxSportsPlayedCount = maxSportsPlayedCount;
+            _maxPlayedCategory = maxPlayedCategory;
+            _minSportsPlayedCount = minSportsPlayedCount;
+            _minPlayedCategory = minPlayedCategory;
+            SportsCategoryCounts = sportsCategoryCounts;
+            MatchUpCountsVersusTeams = matchUpCountsVersusTeams;
+            Breaks = breaks;
+            AmountOfTeamsPlayed = amountOfTeamsPlayed;
+            AmountOfSportsPlayed = amountOfSportsPlayed;
+            teamCoveragePenalty = teamCoveragePenalty;
+            SportsCoveragePenalty = sportsCoveragePenalty;
+            _sportsToPlay = sportsToPlay;
+
         }
 
         /// <summary>
@@ -281,5 +300,33 @@ namespace TeamBuilder.Entity
         {
             return RoundPlayerCounts.Sum(count => (playersPerTeam - count).Abs());
         }
+
+        public ScheduleTeamStatistics Clone()
+        {
+            var sportsCategoryCountsClone = new Dictionary<SportsMatchCategory, int>();
+            foreach (KeyValuePair<SportsMatchCategory, int> pair in SportsCategoryCounts)
+            {
+                sportsCategoryCountsClone.Add(pair.Key, pair.Value);
+            }
+            
+            return new ScheduleTeamStatistics(
+                (int[]) RoundPlayerCounts.Clone(),
+                (int[]) EventsPerRound.Clone(),
+                SportImbalance,
+                _maxSportsPlayedCount,
+                _maxPlayedCategory,
+                _minSportsPlayedCount,
+                _minPlayedCategory,
+                sportsCategoryCountsClone,
+                (int[]) MatchUpCountsVersusTeams.Clone(),
+                Breaks,
+                AmountOfTeamsPlayed,
+                AmountOfSportsPlayed,
+                TeamCoveragePenalty,
+                SportsCoveragePenalty,
+                _sportsToPlay
+            );
+        }
+        
     }
 }

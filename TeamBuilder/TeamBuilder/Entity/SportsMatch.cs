@@ -45,7 +45,7 @@ namespace TeamBuilder.Entity
         /// <returns></returns>
         public SportsMatch Clone()
         {
-            return new SportsMatch(this.MatchType, this.PlayersPerTeam);
+            return new SportsMatch(MatchType, PlayersPerTeam, LowerPlayerLimit, UpperPlayerLimit, RefereeRequired);
         }
 
         public override string ToString()

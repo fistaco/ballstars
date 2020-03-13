@@ -54,7 +54,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     BallStarsSchedule clone = individual.Clone();
                     offspring.Add(clone);
                 }
-                Console.WriteLine("Mutating...");
+                // Console.WriteLine("Mutating...");
                 // Mutate the offspring
                 foreach (var schedule in offspring)
                 {
@@ -65,7 +65,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     schedule.Mutate();
                 }
                 
-                Console.WriteLine("Evaluating...");
+                // Console.WriteLine("Evaluating...");
                 // Evaluate both the population and the offspring
                 population.ForEach(schedule => schedule.Evaluate());
                 offspring.ForEach(schedule => schedule.Evaluate());

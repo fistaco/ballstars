@@ -278,6 +278,13 @@ namespace TeamBuilder.Entity.Individual
         private void RemoveSportsMatch()
         {
             (Event e, int roundIndex) = this.GetRandomEventWithRoundIndex();
+            
+            // Quit if there are no matches to remove
+            if (e.Matches.Count == 0)
+            {
+                return;
+            }
+            
             int matchIndex = Globals.Rand.Next(e.Matches.Count);
             
             this.UpdateEventTeamStatsAfterSportsMatchRemoval(roundIndex, e, e.Matches[matchIndex]);
@@ -455,9 +462,21 @@ namespace TeamBuilder.Entity.Individual
 
         public BallStarsSchedule Clone()
         {
-            // TODO: Check if deep copying is required. Probably is, because lists are passed by reference.
+            // Construct deep copies of the required array objects
+            var roundsClone = new RoundPlanning[Rounds.Length];
+            for (int i = 0; i < Rounds.Length; i++)
+            {
+                roundsClone[i] = Rounds[i].Clone();
+            }
+            
+            var teamStatsClone = new ScheduleTeamStatistics[_teamStats.Length];
+            for (int i = 0; i < _teamStats.Length; i++)
+            {
+                teamStatsClone[i] = _teamStats[i].Clone();
+            }
+
             return new BallStarsSchedule(
-                this.Rounds, _amountOfTeams, _avgPlayersPerTeam, _teamStats, _mutationMethodProbabilities);
+                roundsClone, _amountOfTeams, _avgPlayersPerTeam, teamStatsClone, _mutationMethodProbabilities);
         }
 
         public override string ToString()
