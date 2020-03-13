@@ -280,6 +280,13 @@ namespace TeamBuilder.Entity.Individual
         private void ModifyRandomSportsMatchPlayerAmount(int modification)
         {
             (Event evnt, int roundIndex) = this.GetRandomEventWithRoundIndex();
+            
+            // Quit if there aren't any matches to modify
+            if (evnt.Matches.Count == 0)
+            {
+                return;
+            }
+            
             SportsMatch match = evnt.GetRandomSportsMatch();
             
             // Add the modification to a random match's player count, but only if it's within the allowed limits
