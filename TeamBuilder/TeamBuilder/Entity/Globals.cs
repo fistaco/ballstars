@@ -30,6 +30,7 @@ namespace TeamBuilder.Entity
             { SportsMatchCategory.Badminton, 1 }, // 1 single
             { SportsMatchCategory.BadmintonDoubles, 4 }, // 2 doubles
             { SportsMatchCategory.Basketball, 12 }, // 5v5 + reserves on 2 courts
+            { SportsMatchCategory.Floorball, 5 }, // 4v4 + reserve
             { SportsMatchCategory.Korfball, 6 }, // 4v4 + possible reserves or 6v6
             // { SportsMatchCategory.Referee, 3 },  
             { SportsMatchCategory.Squash, 8 }, // 4 singles
