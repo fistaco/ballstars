@@ -136,7 +136,7 @@ namespace TeamBuilder.Entity
             Breaks = breaks;
             AmountOfTeamsPlayed = amountOfTeamsPlayed;
             AmountOfSportsPlayed = amountOfSportsPlayed;
-            teamCoveragePenalty = teamCoveragePenalty;
+            TeamCoveragePenalty = teamCoveragePenalty;
             SportsCoveragePenalty = sportsCoveragePenalty;
             _sportsToPlay = sportsToPlay;
 
