@@ -137,6 +137,11 @@ namespace TeamBuilder.Entity
                 clone.Events[i] = this.Events[i].Clone();
             }
 
+            foreach (KeyValuePair<SportsMatchCategory, int> pair in this.PlayersPerMatchType)
+            {
+                clone.PlayersPerMatchType.Add(pair.Key, pair.Value);
+            }
+
             return clone;
         }
     }

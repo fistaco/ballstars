@@ -113,6 +113,8 @@ namespace TeamBuilder.Entity
                 clone.Matches.Add(match.Clone());
             }
 
+            clone.VarietyPenalty = this.VarietyPenalty;
+
             return clone;
         }
 
