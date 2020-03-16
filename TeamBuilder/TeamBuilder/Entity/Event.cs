@@ -11,6 +11,21 @@ namespace TeamBuilder.Entity
 
         public List<SportsMatch> Matches;
 
+        public int VarietyPenalty;
+        
+        private Dictionary<SportsMatchCategory, int> _categoryCounts = new Dictionary<SportsMatchCategory, int>()
+        {
+            {SportsMatchCategory.Badminton, 0},
+            {SportsMatchCategory.BadmintonDoubles, 0},
+            {SportsMatchCategory.Basketball, 0},
+            {SportsMatchCategory.Floorball, 0},
+            {SportsMatchCategory.Korfball, 0},
+            // {Sport.Squash, 0},
+            {SportsMatchCategory.TableTennis, 0},
+            {SportsMatchCategory.TableTennisDoubles, 0},
+            // {Sport.Volleyball, 0}
+        };
+
         /// <summary>
         /// Constructs an event with an empty list of matches for the two given team IDs.
         /// </summary>
@@ -22,6 +37,33 @@ namespace TeamBuilder.Entity
             this.TeamTwoId = teamTwoId;
             
             this.Matches = new List<SportsMatch>();
+        }
+
+        public void AddMatch(SportsMatch match)
+        {
+            this.Matches.Add(match);
+
+            // Increase the variety penalty if this event will now have (even more) duplicate sport categories
+            if (_categoryCounts[match.MatchType] > 0)
+            {
+                this.VarietyPenalty++;
+            }
+            
+            _categoryCounts[match.MatchType]++;
+        }
+
+        public void RemoveMatch(SportsMatch match)
+        {
+            this.Matches.Remove(match);
+
+            // Decrease the variety penalty if there were duplicate sport categories in this event
+            if (_categoryCounts[match.MatchType] > 1)
+            {
+                this.VarietyPenalty--;
+            }
+
+            
+            _categoryCounts[match.MatchType]--;
         }
 
         /// <summary>

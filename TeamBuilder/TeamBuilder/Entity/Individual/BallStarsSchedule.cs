@@ -48,7 +48,7 @@ namespace TeamBuilder.Entity.Individual
                 { RemoveSportsMatch, 0.5 },
                 { IncrementRandomSportsMatchPlayerAmount, 0.7 },
                 { DecrementRandomSportsMatchPlayerAmount, 0.7 },
-                { ReplaceEventTeam, 0.5 },
+                // { ReplaceEventTeam, 0.5 },
             };
         }
 
@@ -182,14 +182,20 @@ namespace TeamBuilder.Entity.Individual
 
         public override float Evaluate()
         {
+            int fitness = 0;
+            
             // TODO: Test/check if scaling by squaring is useful for some of the penalties
-            int fitness = _teamStats.Sum(
+            int teamStatFitness = _teamStats.Sum(
                 teamStats => teamStats.TeamCoveragePenalty +   // Play each team at least once
                              teamStats.SportImbalance +        // Keep the sports played balanced
                              teamStats.SportsCoveragePenalty + // Play each sport at least once
                              teamStats.EventLimitPenalty +     // Aim for 1 event per round
                              teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam) // Regulate #players for each event
             );
+            int eventFitness = this.Rounds.Sum(r => r.Events.Sum(e => 
+                e.VarietyPenalty
+            ));
+            fitness = teamStatFitness + eventFitness;
 
             this.Fitness = fitness;
             return fitness;
