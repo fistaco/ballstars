@@ -107,7 +107,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 for (int t1 = 1; t1 < amountOfTeams; t1++)
                 {
                     var mu = new Tuple<int, int>(t0, t1);
-                    if (t0 == t1 || matchUps.Contains(mu))
+                    var reverseMu = new Tuple<int, int>(t1, t0);
+                    if (t0 == t1 || matchUps.Contains(mu) || matchUps.Contains(reverseMu))
                     {
                         continue;
                     }
