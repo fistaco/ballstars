@@ -190,10 +190,10 @@ namespace TeamBuilder.Entity.Individual
                              teamStats.SportImbalance +        // Keep the sports played balanced
                              teamStats.SportsCoveragePenalty + // Play each sport at least once
                              teamStats.EventLimitPenalty +     // Aim for 1 event per round
-                             teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam) // Regulate #players for each event
+                             teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam)*9 // Regulate #players for each event
             );
             int eventFitness = this.Rounds.Sum(r => r.Events.Sum(e => 
-                e.VarietyPenalty
+                e.VarietyPenalty * MediumEvalPenalty
             ));
             fitness = teamStatFitness + eventFitness;
 
@@ -267,6 +267,10 @@ namespace TeamBuilder.Entity.Individual
             // Add new SportsMatches
             this.UpdateEventTeamStatsAfterSportsMatchAddition(r0, e0, m1);
             this.UpdateEventTeamStatsAfterSportsMatchAddition(r1, e1, m0);
+            
+            // Update the events' variety penalties
+            e0.UpdateVarietyPenaltyAfterSwap(m0, m1);
+            e1.UpdateVarietyPenaltyAfterSwap(m1, m0);
         }
 
         private void SwapEvents()
@@ -316,7 +320,7 @@ namespace TeamBuilder.Entity.Individual
             int matchIndex = Globals.Rand.Next(e.Matches.Count);
             
             this.UpdateEventTeamStatsAfterSportsMatchRemoval(roundIndex, e, e.Matches[matchIndex]);
-            e.Matches.RemoveAt(matchIndex);
+            e.RemoveMatchAtIndex(matchIndex);
         }
 
         private void ModifyRandomSportsMatchPlayerAmount(int modification)
@@ -398,7 +402,7 @@ namespace TeamBuilder.Entity.Individual
             // Only add the match if the sports facilities have enough capacity during the round
             if (Rounds[roundIndex].ModifyPlayerAssignmentIfWithinLimit(match.MatchType, match.PlayersPerTeam))
             {
-                evnt.Matches.Add(match);
+                evnt.AddMatch(match);
 
                 // Update the involved teams' statistics
                 this.UpdateEventTeamStatsAfterSportsMatchAddition(roundIndex, evnt, match);

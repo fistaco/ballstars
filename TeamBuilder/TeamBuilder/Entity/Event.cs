@@ -43,27 +43,44 @@ namespace TeamBuilder.Entity
         {
             this.Matches.Add(match);
 
+            UpdateVarietyPenaltyAfterMatchAddition(match);
+            
+            _categoryCounts[match.MatchType]++;
+        }
+
+        public void RemoveMatchAtIndex(int matchIndex)
+        {
+            SportsMatch match = this.Matches[matchIndex];
+
+            UpdateVarietyPenaltyAfterMatchRemoval(match);
+
+            _categoryCounts[match.MatchType]--;
+            
+            this.Matches.RemoveAt(matchIndex);
+        }
+
+        public void UpdateVarietyPenaltyAfterMatchAddition(SportsMatch match)
+        {
             // Increase the variety penalty if this event will now have (even more) duplicate sport categories
             if (_categoryCounts[match.MatchType] > 0)
             {
                 this.VarietyPenalty++;
             }
-            
-            _categoryCounts[match.MatchType]++;
         }
 
-        public void RemoveMatch(SportsMatch match)
+        public void UpdateVarietyPenaltyAfterMatchRemoval(SportsMatch match)
         {
-            this.Matches.Remove(match);
-
             // Decrease the variety penalty if there were duplicate sport categories in this event
             if (_categoryCounts[match.MatchType] > 1)
             {
                 this.VarietyPenalty--;
             }
+        }
 
-            
-            _categoryCounts[match.MatchType]--;
+        public void UpdateVarietyPenaltyAfterSwap(SportsMatch old, SportsMatch @new)
+        {
+            UpdateVarietyPenaltyAfterMatchRemoval(old);
+            UpdateVarietyPenaltyAfterMatchAddition(@new);
         }
 
         /// <summary>
