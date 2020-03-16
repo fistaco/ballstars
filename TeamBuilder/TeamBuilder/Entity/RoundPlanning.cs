@@ -139,7 +139,7 @@ namespace TeamBuilder.Entity
 
             foreach (KeyValuePair<SportsMatchCategory, int> pair in this.PlayersPerMatchType)
             {
-                clone.PlayersPerMatchType.Add(pair.Key, pair.Value);
+                clone.PlayersPerMatchType[pair.Key] = pair.Value;
             }
 
             return clone;
