@@ -49,15 +49,20 @@ namespace TeamBuilder.Entity
         }
 
         public static RoundPlanning Random(int amountOfTeams, int amountOfEvents, int amountOfRegularEvents,
-            List<SportsMatch> matchPool, int avgPlayersPerTeam, bool breakRound = false)
+            List<SportsMatch> matchPool, int avgPlayersPerTeam, bool breakRound = false,
+            List<Tuple<int, int>> predefinedMatchUps = null)
         {
             var round = new RoundPlanning(amountOfEvents);
+
+            bool usePredefinedMatchUps = predefinedMatchUps != null;
 
             // Generate amountOfTeams/2 regular events.
             for (int i = 0; i < amountOfRegularEvents; i++)
             {
-                int t0 = Globals.Rand.Next(0, amountOfTeams);
-                int t1 = Globals.Rand.Next(0, amountOfTeams);
+                // Use a predefined match-up if possible. Randomly generate one otherwise.
+                (int t0, int t1) = usePredefinedMatchUps ?
+                    (predefinedMatchUps[i].Item1, predefinedMatchUps[i].Item2) :
+                    (Globals.Rand.Next(0, amountOfTeams), Globals.Rand.Next(0, amountOfTeams));
 
                 round.Events[i] = Event.Random(t0, t1, matchPool, avgPlayersPerTeam);
             }
