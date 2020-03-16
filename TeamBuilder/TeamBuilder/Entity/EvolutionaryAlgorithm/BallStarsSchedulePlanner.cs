@@ -17,8 +17,10 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly string _outputFile;
 
+        private readonly List<Tuple<int, int>> _predefinedMatchUps;
+
         public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int avgPlayersPerTeam,
-            string outputFile)
+            string outputFile, bool usePredefinedMatchUps = false)
         {
             _amountOfRounds = amountOfRounds;
             _teamNames = teamNames;
@@ -28,6 +30,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             _matchPool = this.InitialiseMatchPool();
 
             _outputFile = outputFile;
+
+            _predefinedMatchUps = null;
+            if (usePredefinedMatchUps)
+            {
+                _predefinedMatchUps = GenerateMinimalTeamMatchUps();
+            }
         }
 
         public override void Run()
@@ -97,23 +105,37 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         /// Generates a list of team match-ups where each team plays against each other team exactly once.
         /// </summary>
         /// <returns></returns>
-        private HashSet<Tuple<int, int>> GenerateMinimalTeamMatchUps(int amountOfTeams)
+        private List<Tuple<int, int>> GenerateMinimalTeamMatchUps()
         {
-            var matchUps = new HashSet<Tuple<int, int>>();
-            
-            // Iterate over all pairs of team IDs and add all pairs except for duplicates.
-            for (int t0 = 0; t0 < amountOfTeams; t0++)
+            // Fill two arrays, each of which contains half of the team IDs
+            int arraySize = _amountOfTeams / 2;
+            int[] teamOneArray = new int[arraySize];
+            int[] teamTwoArray = new int[arraySize];
+            for (int i = 0; i < arraySize; i++)
             {
-                for (int t1 = 1; t1 < amountOfTeams; t1++)
-                {
-                    var mu = new Tuple<int, int>(t0, t1);
-                    var reverseMu = new Tuple<int, int>(t1, t0);
-                    if (t0 == t1 || matchUps.Contains(mu) || matchUps.Contains(reverseMu))
-                    {
-                        continue;
-                    }
+                teamOneArray[i] = i;
+                teamTwoArray[i] = i + arraySize;
+            }
 
-                    matchUps.Add(mu);
+            // Fill the match-up list by rotating every team but team 0 each round
+            var matchUps = new List<Tuple<int, int>>();
+            int maxId = _amountOfTeams - 1;
+            for (int r = 0; r < _amountOfRounds; r++)
+            {
+                // Add the current match-ups
+                for (int i = 0; i < arraySize; i++)
+                {
+                    matchUps.Add(new Tuple<int, int>(teamOneArray[i], teamTwoArray[i]));
+                }
+                
+                // Rotate indices by decrementing them. 1 Becomes maxId when rotated.
+                for (int i = 1; i < arraySize; i++)
+                {
+                    teamOneArray[i] = teamOneArray[i] == 1 ? maxId : teamOneArray[i] - 1;
+                }
+                for (int i = 0; i < arraySize; i++)
+                {
+                    teamTwoArray[i] = teamTwoArray[i] == 1 ? maxId : teamTwoArray[i] - 1;
                 }
             }
 
@@ -182,7 +204,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             {
                 population.Add(BallStarsSchedule.Random(
                     _amountOfTeams, eventsPerRound, regularEventsPerRound, _amountOfRounds, _matchPool, addBreakRound,
-                    _avgPlayersPerTeam
+                    _avgPlayersPerTeam, _predefinedMatchUps
                 ));
             }
 

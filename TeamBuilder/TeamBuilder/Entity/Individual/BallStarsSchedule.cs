@@ -78,22 +78,44 @@ namespace TeamBuilder.Entity.Individual
         /// compete against each other in random events.
         /// </summary>
         /// <param name="amountOfTeams"></param>
-        /// <param name="amountOfEvents"></param>
-        /// <param name="amountOfRegularEvents"></param>
+        /// <param name="eventsPerRound"></param>
+        /// <param name="regularEventsPerRound"></param>
         /// <param name="amountOfRounds"></param>
         /// <param name="matchPool"></param>
         /// <param name="breakRound"></param>
         /// <param name="avgPlayersPerTeam"></param>
-        public static BallStarsSchedule Random(int amountOfTeams, int amountOfEvents, int amountOfRegularEvents,
-            int amountOfRounds, List<SportsMatch> matchPool, bool breakRound, int avgPlayersPerTeam)
+        /// <param name="predefinedMatchUps">Given match-up tuples that cover the minimal requirements. These are
+        /// assumed to be sorted.</param>
+        public static BallStarsSchedule Random(int amountOfTeams, int eventsPerRound, int regularEventsPerRound,
+            int amountOfRounds, List<SportsMatch> matchPool, bool breakRound, int avgPlayersPerTeam,
+            List<Tuple<int, int>> predefinedMatchUps = null)
         {
             var schedule = new BallStarsSchedule(amountOfRounds, amountOfTeams, avgPlayersPerTeam);
 
-            // TODO: Incorporate maxPlayersPerTeam instead of leaving it to the evaluation method
+            bool usePredefinedMatchUps = predefinedMatchUps != null;
+
+            // Generate each random round independently unless match-ups are provided
+            int currentMatchUpIndex = 0;
             for (int i = 0; i < amountOfRounds; i++)
             {
-                schedule.Rounds[i] = RoundPlanning.Random(amountOfTeams, amountOfEvents, amountOfRegularEvents,
-                    matchPool, avgPlayersPerTeam, breakRound);
+                if (!usePredefinedMatchUps)
+                {
+                    schedule.Rounds[i] = RoundPlanning.Random(amountOfTeams, eventsPerRound, regularEventsPerRound,
+                        matchPool, avgPlayersPerTeam, breakRound);
+                }
+                else
+                {
+                    // Get the desired subset of event match-ups
+                    List<Tuple<int, int>> eventMatchUps =
+                        predefinedMatchUps.GetRange(currentMatchUpIndex, regularEventsPerRound);
+                    currentMatchUpIndex += regularEventsPerRound;
+                    
+                    schedule.Rounds[i] = RoundPlanning.Random(amountOfTeams, eventsPerRound, regularEventsPerRound,
+                        matchPool, avgPlayersPerTeam, breakRound, eventMatchUps);
+                    
+                    // Go back to random generation if we've iterated through all the predefined match-ups
+                    usePredefinedMatchUps = currentMatchUpIndex < predefinedMatchUps.Count;
+                }
             }
             // Update all team statistics based on the rounds' contents
             for (int i = 0; i < amountOfTeams; i++)
