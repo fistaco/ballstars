@@ -9,11 +9,11 @@ namespace TeamBuilder.Entity
         public int TeamOneId;
         public int TeamTwoId;
 
-        public List<SportsMatch> Matches;
+        public readonly List<SportsMatch> Matches;
 
         public int VarietyPenalty;
         
-        private Dictionary<SportsMatchCategory, int> _categoryCounts = new Dictionary<SportsMatchCategory, int>()
+        private readonly Dictionary<SportsMatchCategory, int> _categoryCounts = new Dictionary<SportsMatchCategory, int>
         {
             {SportsMatchCategory.Badminton, 0},
             {SportsMatchCategory.BadmintonDoubles, 0},
@@ -43,8 +43,9 @@ namespace TeamBuilder.Entity
         {
             this.Matches.Add(match);
 
-            UpdateVarietyPenaltyAfterMatchAddition(match);
-            
+            UpdateVarietyPenaltyAfterMatchAddition(match.MatchType);
+            UpdateVarietyPenaltyForSimilarCategories(match, true);
+
             _categoryCounts[match.MatchType]++;
         }
 
@@ -52,26 +53,68 @@ namespace TeamBuilder.Entity
         {
             SportsMatch match = this.Matches[matchIndex];
 
-            UpdateVarietyPenaltyAfterMatchRemoval(match);
+            UpdateVarietyPenaltyAfterMatchRemoval(match.MatchType);
+            UpdateVarietyPenaltyForSimilarCategories(match, false);
 
             _categoryCounts[match.MatchType]--;
             
             this.Matches.RemoveAt(matchIndex);
         }
 
-        public void UpdateVarietyPenaltyAfterMatchAddition(SportsMatch match)
+        /// <summary>
+        /// Updates the variety penalty for the singles or doubles counterpart of a category that has just been added or
+        /// removed.
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="added"></param>
+        public void UpdateVarietyPenaltyForSimilarCategories(SportsMatch match, bool added)
+        {
+            // If a category's counterpart has just been added/removed, consider it when updating the variety penalty
+            // e.g. if a badminton match has just been added, check the badmintonDoubles category for duplicates as well
+            SportsMatchCategory cat = match.MatchType;
+            
+            switch (cat)
+            {
+                case SportsMatchCategory.Badminton:
+                    UpdateVarietyPenaltyAfterMatchUpdate(SportsMatchCategory.BadmintonDoubles, added);
+                    break;
+                case SportsMatchCategory.BadmintonDoubles:
+                    UpdateVarietyPenaltyAfterMatchUpdate(SportsMatchCategory.Badminton, added);
+                    break;
+                case SportsMatchCategory.TableTennis:
+                    UpdateVarietyPenaltyAfterMatchUpdate(SportsMatchCategory.TableTennisDoubles, added);
+                    break;
+                case SportsMatchCategory.TableTennisDoubles:
+                    UpdateVarietyPenaltyAfterMatchUpdate(SportsMatchCategory.TableTennis, added);
+                    break;
+            }
+        }
+
+        public void UpdateVarietyPenaltyAfterMatchUpdate(SportsMatchCategory category, bool added)
+        {
+            if (added)
+            {
+                UpdateVarietyPenaltyAfterMatchAddition(category);
+            }
+            else
+            {
+                UpdateVarietyPenaltyAfterMatchRemoval(category);
+            }
+        }
+
+        public void UpdateVarietyPenaltyAfterMatchAddition(SportsMatchCategory category)
         {
             // Increase the variety penalty if this event will now have (even more) duplicate sport categories
-            if (_categoryCounts[match.MatchType] > 0)
+            if (_categoryCounts[category] > 0)
             {
                 this.VarietyPenalty++;
             }
         }
 
-        public void UpdateVarietyPenaltyAfterMatchRemoval(SportsMatch match)
+        public void UpdateVarietyPenaltyAfterMatchRemoval(SportsMatchCategory category)
         {
             // Decrease the variety penalty if there were duplicate sport categories in this event
-            if (_categoryCounts[match.MatchType] > 1)
+            if (_categoryCounts[category] > 1)
             {
                 this.VarietyPenalty--;
             }
@@ -79,8 +122,8 @@ namespace TeamBuilder.Entity
 
         public void UpdateVarietyPenaltyAfterSwap(SportsMatch old, SportsMatch @new)
         {
-            UpdateVarietyPenaltyAfterMatchRemoval(old);
-            UpdateVarietyPenaltyAfterMatchAddition(@new);
+            UpdateVarietyPenaltyAfterMatchRemoval(old.MatchType);
+            UpdateVarietyPenaltyAfterMatchAddition(@new.MatchType);
         }
 
         /// <summary>
@@ -137,7 +180,6 @@ namespace TeamBuilder.Entity
 
         public override string ToString()
         {
-            // string matches =  Matches.Select(m => m.ToString()).Aggregate((result, matchString) => $"{result} {matchString}");
             string matches = string.Join(" ", Matches.Select(m => m.ToString()));
             return $"{TeamOneId} - {TeamTwoId}: {matches}";
         }
