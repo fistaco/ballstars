@@ -270,11 +270,13 @@ namespace TeamBuilder.Entity.Individual
             {
                 result.AddRound(schedule2.Rounds[i], i);
             }
+            
+            result.UpdateScheduleStats();
 
             return result;
         }
 
-        public void AddRound(RoundPlanning round, int roundIndex)
+        private void AddRound(RoundPlanning round, int roundIndex)
         {
             this.Rounds[roundIndex] = round;
         }
