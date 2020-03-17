@@ -224,7 +224,53 @@ namespace TeamBuilder.Entity.Individual
 
         public override Individual Crossover(Individual other)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Constructs two offspring by combining this schedule with a given schedule. The first offspring will contain
+        /// 1/4 of this schedule's rounds and 3/4 of the other schedule's rounds. The second offspring will contain the
+        /// leftover rounds.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <param name="quarterRounds"></param>
+        /// <returns></returns>
+        public (BallStarsSchedule, BallStarsSchedule) Crossover(BallStarsSchedule other, int quarterRounds)
+        {
+            BallStarsSchedule offspring1 = ConstructOffspring(this, other, quarterRounds);
+            BallStarsSchedule offspring2 = ConstructOffspring(other, this, quarterRounds);
+
+            return (offspring1, offspring2);
+        }
+
+        /// <summary>
+        /// Constructs a schedule by taking 1/4 of schedule1's rounds and 3/4 of schedule2's rounds.
+        /// </summary>
+        /// <param name="schedule1"></param>
+        /// <param name="schedule2"></param>
+        /// <param name="quarterRounds"></param>
+        /// <returns></returns>
+        private BallStarsSchedule ConstructOffspring(BallStarsSchedule schedule1, BallStarsSchedule schedule2,
+            int quarterRounds)
+        {
+            BallStarsSchedule result = new BallStarsSchedule(this.Rounds.Length, _amountOfTeams, _avgPlayersPerTeam);
+            
+            for (int i = 0; i < quarterRounds; i++)
+            {
+                result.AddRound(schedule1.Rounds[i], i);
+            }
+
+            for (int i = quarterRounds; i < this.Rounds.Length; i++)
+            {
+                result.AddRound(schedule2.Rounds[i], i);
+            }
+
+            return result;
+        }
+
+        public void AddRound(RoundPlanning round, int roundIndex)
+        {
+            this.Rounds[roundIndex] = round;
         }
 
         public void GranularMutate()
