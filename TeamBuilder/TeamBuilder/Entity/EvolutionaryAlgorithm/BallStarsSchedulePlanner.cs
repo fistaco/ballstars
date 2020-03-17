@@ -19,8 +19,10 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly List<Tuple<int, int>> _predefinedMatchUps;
 
+        private readonly bool _useLocalSearch;
+
         public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int avgPlayersPerTeam,
-            string outputFile, bool usePredefinedMatchUps = false)
+            string outputFile, bool usePredefinedMatchUps = false, bool useLocalSearch = false)
         {
             _amountOfRounds = amountOfRounds;
             _teamNames = teamNames;
@@ -36,6 +38,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             {
                 _predefinedMatchUps = GenerateMinimalTeamMatchUps();
             }
+
+            _useLocalSearch = useLocalSearch;
         }
 
         public override void Run()
@@ -49,26 +53,42 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             BallStarsSchedule bestSolution = population[0];
             float bestFitness = bestSolution.Evaluate();
             int currentGen = 0;
-            while (bestFitness != 0f && currentGen < 100) // TODO: Include timer if necessary
+            while (bestFitness != 0f && currentGen < 75) // TODO: Include timer if necessary
             {
                 Console.WriteLine($"Commencing generation {currentGen}.");
 
                 // Create offspring by applying crossover to the existing population
                 var offspring = new List<BallStarsSchedule>();
-                foreach (var individual in population)
+
+                if (_useLocalSearch)
                 {
-                    // TODO: Use crossover to create offspring instead of cloning
-                    BallStarsSchedule clone = individual.Clone();
-                    offspring.Add(clone);
+                    // Local search
+                    for (int i = 0; i < population.Count; i++)
+                    {
+                        BallStarsSchedule clone = bestSolution.Clone();
+                        offspring.Add(clone);
+                    }
                 }
+                else
+                {
+                    // Cloning/crossover for an evolutionary algorithm
+                    foreach (var individual in population)
+                    {
+                        // TODO: Use crossover to create offspring instead of cloning
+                        BallStarsSchedule clone = individual.Clone();
+                        offspring.Add(clone);
+                    }
+                }
+
                 // Mutate the offspring
                 foreach (var schedule in offspring)
                 {
-                    if (Globals.Rand.NextDouble() < 0.5)
+                    if (Globals.Rand.NextDouble() < 0.8)
                     {
                         schedule.AddSportsMatchFromPool(_matchPool);
                     }
-                    schedule.Mutate();
+                    schedule.GranularMutate();
+                    // schedule.Mutate();
                 }
                 
                 // Evaluate both the population and the offspring
