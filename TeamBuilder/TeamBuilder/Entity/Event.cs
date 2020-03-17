@@ -173,6 +173,11 @@ namespace TeamBuilder.Entity
                 clone.Matches.Add(match.Clone());
             }
 
+            foreach (KeyValuePair<SportsMatchCategory,int> pair in _categoryCounts)
+            {
+                clone._categoryCounts[pair.Key] = pair.Value;
+            }
+
             clone.VarietyPenalty = this.VarietyPenalty;
 
             return clone;
