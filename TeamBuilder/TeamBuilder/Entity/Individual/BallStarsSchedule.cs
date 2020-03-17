@@ -357,6 +357,13 @@ namespace TeamBuilder.Entity.Individual
             }
             
             SportsMatch match = evnt.GetRandomSportsMatch();
+
+            // Ensure that doubles categories retain an even amount of players
+            if (match.MatchType == SportsMatchCategory.BadmintonDoubles ||
+                match.MatchType == SportsMatchCategory.TableTennisDoubles)
+            {
+                modification *= 2;
+            }
             
             // Add the modification to a random match's player count, but only if it's within the allowed limits
             int modifiedPlayerAmount = match.PlayersPerTeam + modification;
