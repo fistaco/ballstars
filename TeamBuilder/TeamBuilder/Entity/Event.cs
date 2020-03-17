@@ -153,7 +153,7 @@ namespace TeamBuilder.Entity
                     break;
                 }
 
-                evnt.Matches.Add(match);
+                evnt.AddMatch(match);
                 allocatedPlayers = newPlayerCount;
             }
 
