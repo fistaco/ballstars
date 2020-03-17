@@ -122,7 +122,7 @@ namespace TeamBuilder.Entity
             int maxSportsPlayedCount, SportsMatchCategory maxPlayedCategory, int minSportsPlayedCount,
             SportsMatchCategory minPlayedCategory, Dictionary<SportsMatchCategory, int> sportsCategoryCounts,
             int[] matchUpCountsVersusTeams, int breaks, int amountOfTeamsPlayed, int amountOfSportsPlayed,
-            int teamCoveragePenalty, int sportsCoveragePenalty, int sportsToPlay)
+            int teamCoveragePenalty, int sportsCoveragePenalty, int sportsToPlay, int teamsToPlay)
         {
             RoundPlayerCounts = roundPlayerCounts;
             EventsPerRound = eventsPerRound;
@@ -139,7 +139,7 @@ namespace TeamBuilder.Entity
             TeamCoveragePenalty = teamCoveragePenalty;
             SportsCoveragePenalty = sportsCoveragePenalty;
             _sportsToPlay = sportsToPlay;
-
+            _teamsToPlay = teamsToPlay;
         }
 
         /// <summary>
@@ -324,7 +324,8 @@ namespace TeamBuilder.Entity
                 AmountOfSportsPlayed,
                 TeamCoveragePenalty,
                 SportsCoveragePenalty,
-                _sportsToPlay
+                _sportsToPlay,
+                _teamsToPlay
             );
         }
         
