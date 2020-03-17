@@ -8,6 +8,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
     internal class BallStarsSchedulePlanner : EvolutionaryAlgorithm
     {
         private readonly int _amountOfRounds;
+        private readonly int _roundCrossoverCutoff;
         
         private readonly string[] _teamNames;
         private readonly int _amountOfTeams;
@@ -21,10 +22,14 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly bool _useLocalSearch;
 
+        private readonly bool _useCrossover;
+
         public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int avgPlayersPerTeam,
-            string outputFile, bool usePredefinedMatchUps = false, bool useLocalSearch = false)
+            string outputFile, bool usePredefinedMatchUps = false, bool useLocalSearch = false,
+            bool useCrossover = false)
         {
             _amountOfRounds = amountOfRounds;
+            _roundCrossoverCutoff = amountOfRounds / 4;
             _teamNames = teamNames;
             _amountOfTeams = teamNames.Length;
             _avgPlayersPerTeam = avgPlayersPerTeam;
@@ -40,6 +45,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             }
 
             _useLocalSearch = useLocalSearch;
+            _useCrossover = useCrossover;
         }
 
         public override void Run()
@@ -71,12 +77,25 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 }
                 else
                 {
-                    // Cloning/crossover for an evolutionary algorithm
-                    foreach (var individual in population)
+                    if (_useCrossover)
                     {
-                        // TODO: Use crossover to create offspring instead of cloning
-                        BallStarsSchedule clone = individual.Clone();
-                        offspring.Add(clone);
+                        // Apply single-point crossover at a given cutoff point
+                        for (int i = 0; i < population.Count; i += 2)
+                        {
+                            (BallStarsSchedule o0, BallStarsSchedule o1) =
+                                population[i].Crossover(population[i + 1], _roundCrossoverCutoff);
+                            offspring.Add(o0);
+                            offspring.Add(o1);
+                        }
+                    }
+                    else
+                    {
+                        // Use cloning
+                        foreach (var individual in population)
+                        {
+                            BallStarsSchedule clone = individual.Clone();
+                            offspring.Add(clone);
+                        }
                     }
                 }
 

@@ -252,33 +252,28 @@ namespace TeamBuilder.Entity.Individual
         /// <summary>
         /// Constructs a schedule by taking 1/4 of schedule1's rounds and 3/4 of schedule2's rounds.
         /// </summary>
+        /// <param name="schedule0"></param>
         /// <param name="schedule1"></param>
-        /// <param name="schedule2"></param>
         /// <param name="quarterRounds"></param>
         /// <returns></returns>
-        private BallStarsSchedule ConstructOffspring(BallStarsSchedule schedule1, BallStarsSchedule schedule2,
+        private BallStarsSchedule ConstructOffspring(BallStarsSchedule schedule0, BallStarsSchedule schedule1,
             int quarterRounds)
         {
             BallStarsSchedule result = new BallStarsSchedule(this.Rounds.Length, _amountOfTeams, _avgPlayersPerTeam);
             
             for (int i = 0; i < quarterRounds; i++)
             {
-                result.AddRound(schedule1.Rounds[i], i);
+                result.Rounds[i] = schedule0.Rounds[i].Clone();
             }
 
             for (int i = quarterRounds; i < this.Rounds.Length; i++)
             {
-                result.AddRound(schedule2.Rounds[i], i);
+                result.Rounds[i] = schedule1.Rounds[i].Clone();
             }
             
             result.UpdateScheduleStats();
 
             return result;
-        }
-
-        private void AddRound(RoundPlanning round, int roundIndex)
-        {
-            this.Rounds[roundIndex] = round;
         }
 
         public void GranularMutate()
