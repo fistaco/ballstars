@@ -117,17 +117,23 @@ namespace TeamBuilder.Entity.Individual
                     usePredefinedMatchUps = currentMatchUpIndex < predefinedMatchUps.Count;
                 }
             }
-            // Update all team statistics based on the rounds' contents
-            for (int i = 0; i < amountOfTeams; i++)
-            {
-                for (int j = 0; j < amountOfRounds; j++)
-                {
-                    schedule.UpdateTeamStats(i, j);
-                }
-            }
-            schedule.UpdateRoundPlayerCounts();
+            
+            schedule.UpdateScheduleStats();
             
             return schedule;
+        }
+
+        private void UpdateScheduleStats()
+        {
+            // Update all team statistics based on the rounds' contents
+            for (int i = 0; i < _amountOfTeams; i++)
+            {
+                for (int j = 0; j < this.Rounds.Length; j++)
+                {
+                    this.UpdateTeamStats(i, j);
+                }
+            }
+            this.UpdateRoundPlayerCounts();
         }
 
         /// <summary>
@@ -136,7 +142,7 @@ namespace TeamBuilder.Entity.Individual
         /// </summary>
         /// <param name="teamIndex"></param>
         /// <param name="roundIndex"></param>
-        public void UpdateTeamStats(int teamIndex, int roundIndex)
+        private void UpdateTeamStats(int teamIndex, int roundIndex)
         {
             ScheduleTeamStatistics teamStats = _teamStats[teamIndex];
             RoundPlanning round = this.Rounds[roundIndex];
