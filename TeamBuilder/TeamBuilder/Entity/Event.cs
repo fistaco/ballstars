@@ -12,6 +12,8 @@ namespace TeamBuilder.Entity
         public readonly List<SportsMatch> Matches;
 
         public int VarietyPenalty;
+
+        public int RefereesRequired;
         
         private readonly Dictionary<SportsMatchCategory, int> _categoryCounts = new Dictionary<SportsMatchCategory, int>
         {
@@ -24,6 +26,7 @@ namespace TeamBuilder.Entity
             {SportsMatchCategory.TableTennis, 0},
             {SportsMatchCategory.TableTennisDoubles, 0},
             // {Sport.Volleyball, 0}
+            {SportsMatchCategory.Referee, 0}
         };
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace TeamBuilder.Entity
 
             UpdateVarietyPenaltyAfterMatchAddition(match.MatchType);
             UpdateVarietyPenaltyForSimilarCategories(match, true);
+            UpdateRequiredRefereeAmount(match.MatchType, true);
 
             _categoryCounts[match.MatchType]++;
         }
@@ -55,6 +59,7 @@ namespace TeamBuilder.Entity
 
             UpdateVarietyPenaltyAfterMatchRemoval(match.MatchType);
             UpdateVarietyPenaltyForSimilarCategories(match, false);
+            UpdateRequiredRefereeAmount(match.MatchType, false);
 
             _categoryCounts[match.MatchType]--;
             
@@ -125,6 +130,16 @@ namespace TeamBuilder.Entity
             UpdateVarietyPenaltyAfterMatchRemoval(old.MatchType);
             UpdateVarietyPenaltyAfterMatchAddition(@new.MatchType);
         }
+        
+        public void UpdateRequiredRefereeAmount(SportsMatchCategory category, bool added)
+        {
+            int modification = added ? 1 : -1;
+
+            if (Globals.MatchTypesRequiringReferee.Contains(category))
+            {
+                this.RefereesRequired += modification;
+            }
+        }
 
         /// <summary>
         /// Constructs an Event with a random amount of sports matches where the amount of participating players remains
@@ -179,6 +194,7 @@ namespace TeamBuilder.Entity
             }
 
             clone.VarietyPenalty = this.VarietyPenalty;
+            clone.RefereesRequired = this.RefereesRequired;
 
             return clone;
         }

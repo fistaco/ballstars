@@ -96,7 +96,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 offspring.ForEach(schedule => schedule.Evaluate());
                 
                 // Select the best n individuals out of the population + offspring
-                population = NaiveSelection(population, offspring);
+                // population = NaiveSelection(population, offspring);
+                population = TournamentSelection(population, offspring, 4);
 
                 // Update bestFitness if possible
                 foreach (var individual in population)
@@ -200,12 +201,12 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 // new SportsMatch(SportsMatchCategory.Squash, 1, squashMin, squashMax),
                 // new SportsMatch(SportsMatchCategory.Squash, 2, squashMin, squashMax),
                 // new SportsMatch(SportsMatchCategory.Squash, 3, squashMin, squashMax),
-                // new SportsMatch(SportsMatchCategory.TableTennis, 1),
+                new SportsMatch(SportsMatchCategory.TableTennis, 1),
                 new SportsMatch(SportsMatchCategory.TableTennis, 2, tableTennisMin, tableTennisMax),
                 new SportsMatch(SportsMatchCategory.TableTennis, 3, tableTennisMin, tableTennisMax),
                 new SportsMatch(SportsMatchCategory.TableTennisDoubles, 2, tableTennisDoublesMin, tableTennisDoublesMax),
-                // new SportsMatch(SportsMatchCategory.Volleyball, 6, volleyballMin, volleyballMax),
-                // new SportsMatch(SportsMatchCategory.Referee, 1, 1, 1)
+                // new SportsMatch(SportsMatchCategory.Volleyball, 6, volleyballMin, volleyballMax, true),
+                new SportsMatch(SportsMatchCategory.Referee, 1, 1, 1)
             };
         }
 

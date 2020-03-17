@@ -66,6 +66,7 @@ namespace TeamBuilder.Entity
             {SportsMatchCategory.TableTennis, 0},
             {SportsMatchCategory.TableTennisDoubles, 0},
             // {Sport.Volleyball, 0}
+            {SportsMatchCategory.Referee, 0}
         };
 
         /// <summary>

@@ -187,6 +187,7 @@ namespace TeamBuilder.Entity.Individual
         private int _eventLimitPenalty;
         private int _roundPlayerLimitPenalty;
         private int _varietyPenalty;
+        private int _refereePenalty;
         
         public override float Evaluate()
         {
@@ -199,6 +200,8 @@ namespace TeamBuilder.Entity.Individual
             _eventLimitPenalty = _teamStats.Sum(teamStats => teamStats.EventLimitPenalty);
             _roundPlayerLimitPenalty =
                 _teamStats.Sum(teamStats => teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam) * 9);
+            _varietyPenalty = this.Rounds.Sum(r => r.Events.Sum(e => e.VarietyPenalty * MediumEvalPenalty));
+            _refereePenalty = this.Rounds.Sum(r => r.RefereePenalty);
             
             // TODO: Test/check if scaling by squaring is useful for some of the penalties
             int teamStatFitness = _teamStats.Sum(
@@ -208,11 +211,12 @@ namespace TeamBuilder.Entity.Individual
                              teamStats.EventLimitPenalty +     // Aim for 1 event per round
                              teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam)*9 // Regulate #players for each event
             );
+            int roundFitness = this.Rounds.Sum(r => r.RefereePenalty); // Exactly 1 ref per sport requiring a ref
             int eventFitness = this.Rounds.Sum(r => r.Events.Sum(e => 
-                e.VarietyPenalty * MediumEvalPenalty
+                e.VarietyPenalty * MediumEvalPenalty // Each sport should occur at most once per event
             ));
-            _varietyPenalty = eventFitness; // TODO: Remove this debug line
-            fitness = teamStatFitness + eventFitness;
+
+            fitness = teamStatFitness + roundFitness + eventFitness;
 
             this.Fitness = fitness;
             return fitness;

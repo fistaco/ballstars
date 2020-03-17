@@ -9,7 +9,9 @@ namespace TeamBuilder.Entity
     {
         public Event[] Events;
 
-        public int RefereesRequired = 3;
+        public int RefereesRequired => Events.Sum(e => e.RefereesRequired);
+        
+        public int RefereePenalty => (RefereesRequired - PlayersPerMatchType[SportsMatchCategory.Referee]).Abs();
 
         /// <summary>
         /// The amount of players assigned to each sport during this round, divided by 2 to track allocations per team.
@@ -118,12 +120,6 @@ namespace TeamBuilder.Entity
                    newCategoryNewAmount <= Globals.MatchTypePlayerLimitsPerTeam[@new.MatchType];
         }
 
-        public int RefereePenalty()
-        {
-            // Require referees for basketball, floorball, korfball, and volleyball matches.
-            return (RefereesRequired - PlayersPerMatchType[SportsMatchCategory.Referee]).Abs();
-        }
-
         public override string ToString()
         {
             return Events.Select(e => e.ToString()).Aggregate((result, eventString) => $"{result}\n{eventString}");
@@ -131,7 +127,7 @@ namespace TeamBuilder.Entity
 
         public RoundPlanning Clone()
         {
-            RoundPlanning clone = new RoundPlanning(this.Events.Length) { RefereesRequired = this.RefereesRequired };
+            RoundPlanning clone = new RoundPlanning(this.Events.Length);
             for (int i = 0; i < this.Events.Length; i++)
             {
                 clone.Events[i] = this.Events[i].Clone();

@@ -38,6 +38,18 @@ namespace TeamBuilder.Entity
             { SportsMatchCategory.TableTennisDoubles, 2}, // 1 doubles
             { SportsMatchCategory.Volleyball, 6 }, // 6v6
             { SportsMatchCategory.Break, 10 }, // One team can take a break at a time.
+            { SportsMatchCategory.Referee, 999 } // Assume referees don't take up a significant amount of space
+        };
+
+        /// <summary>
+        /// An array of sport categories that require a referee during the match.
+        /// </summary>
+        public static readonly SportsMatchCategory[] MatchTypesRequiringReferee = new SportsMatchCategory[]
+        {
+            SportsMatchCategory.Basketball,
+            SportsMatchCategory.Floorball,
+            SportsMatchCategory.Korfball,
+            SportsMatchCategory.Volleyball
         };
         
         /// <summary>
