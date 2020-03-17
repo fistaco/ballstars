@@ -243,5 +243,44 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             population.AddRange(offspring);
             return population.OrderBy(indiv => indiv.Fitness).Take(offspring.Count).ToList();
         }
+
+        /// <summary>
+        /// Selects an amount of individuals equal to the given population's size by applying tournament selection,
+        /// where the fittest individuals are taken from n random samples of a given tournament size.
+        /// </summary>
+        /// <param name="population"></param>
+        /// <param name="offspring"></param>
+        /// <param name="tournamentSize">The amount of individuals in each tournament. Larger tournament size results in
+        /// a lower probability of selecting weaker individuals</param>
+        /// <returns></returns>
+        private List<BallStarsSchedule> TournamentSelection(List<BallStarsSchedule> population,
+            List<BallStarsSchedule> offspring, int tournamentSize)
+        {
+            int n = population.Count;
+
+            // Combine the population and offspring
+            population.AddRange(offspring);
+
+            BallStarsSchedule[] selected = new BallStarsSchedule[n];
+            for (int i = 0; i < n; i++)
+            {
+                // Track the tournament winner and its fitness
+                double bestFitness = Int32.MaxValue;
+                BallStarsSchedule tournamentWinner = null;
+                for (int j = 0; j < tournamentSize; j++)
+                {
+                    BallStarsSchedule randomSchedule = population[Globals.Rand.Next(population.Count)];
+                    if (randomSchedule.Fitness < bestFitness)
+                    {
+                        bestFitness = randomSchedule.Fitness;
+                        tournamentWinner = randomSchedule;
+                    }
+                }
+
+                selected[i] = tournamentWinner;
+            }
+
+            return selected.ToList();
+        }
     }
 }
