@@ -19,6 +19,8 @@ namespace TeamBuilder.Entity
         /// </summary>
         public readonly int[] RoundPlayerCounts;
 
+        private int _roundPlayerLimitPenalty;
+
         /// <summary>
         /// Tracks the amount of events this team plays in for each round.
         /// </summary>
@@ -122,7 +124,8 @@ namespace TeamBuilder.Entity
             int maxSportsPlayedCount, SportsMatchCategory maxPlayedCategory, int minSportsPlayedCount,
             SportsMatchCategory minPlayedCategory, Dictionary<SportsMatchCategory, int> sportsCategoryCounts,
             int[] matchUpCountsVersusTeams, int breaks, int amountOfTeamsPlayed, int amountOfSportsPlayed,
-            int teamCoveragePenalty, int sportsCoveragePenalty, int sportsToPlay, int teamsToPlay)
+            int teamCoveragePenalty, int sportsCoveragePenalty, int sportsToPlay, int teamsToPlay,
+            int roundPlayerLimitPenalty)
         {
             RoundPlayerCounts = roundPlayerCounts;
             EventsPerRound = eventsPerRound;
@@ -140,6 +143,7 @@ namespace TeamBuilder.Entity
             SportsCoveragePenalty = sportsCoveragePenalty;
             _sportsToPlay = sportsToPlay;
             _teamsToPlay = teamsToPlay;
+            _roundPlayerLimitPenalty = roundPlayerLimitPenalty;
         }
 
         /// <summary>
@@ -298,7 +302,9 @@ namespace TeamBuilder.Entity
 
         public int RoundPlayerLimitPenalty(int playersPerTeam)
         {
-            return RoundPlayerCounts.Sum(count => (playersPerTeam - count).Abs());
+            int penalty = RoundPlayerCounts.Sum(count => (playersPerTeam - count).Abs());
+            _roundPlayerLimitPenalty = penalty;
+            return penalty;
         }
 
         public ScheduleTeamStatistics Clone()
@@ -325,7 +331,8 @@ namespace TeamBuilder.Entity
                 TeamCoveragePenalty,
                 SportsCoveragePenalty,
                 _sportsToPlay,
-                _teamsToPlay
+                _teamsToPlay,
+                _roundPlayerLimitPenalty
             );
         }
         
