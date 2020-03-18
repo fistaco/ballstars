@@ -52,7 +52,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
         {
             Console.WriteLine("Initiating random population of schedules...");
             // Construct n random solutions, which are permutations of one original random set
-            List<BallStarsSchedule> population = InitRandomPopulation(8192)
+            List<BallStarsSchedule> population = InitRandomPopulation(4096)
                 .Select(indiv => indiv as BallStarsSchedule).ToList();
 
             // Evolve over generations until a sufficiently good solution is found or time runs out.
@@ -75,27 +75,24 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                         offspring.Add(clone);
                     }
                 }
+                else if (_useCrossover)
+                {
+                    // Apply single-point crossover at a given cutoff point
+                    for (int i = 0; i < population.Count; i += 2)
+                    {
+                        (BallStarsSchedule o0, BallStarsSchedule o1) =
+                            population[i].Crossover(population[i + 1], _roundCrossoverCutoff);
+                        offspring.Add(o0);
+                        offspring.Add(o1);
+                    }
+                }
                 else
                 {
-                    if (_useCrossover)
+                    // Use cloning
+                    foreach (var individual in population)
                     {
-                        // Apply single-point crossover at a given cutoff point
-                        for (int i = 0; i < population.Count; i += 2)
-                        {
-                            (BallStarsSchedule o0, BallStarsSchedule o1) =
-                                population[i].Crossover(population[i + 1], _roundCrossoverCutoff);
-                            offspring.Add(o0);
-                            offspring.Add(o1);
-                        }
-                    }
-                    else
-                    {
-                        // Use cloning
-                        foreach (var individual in population)
-                        {
-                            BallStarsSchedule clone = individual.Clone();
-                            offspring.Add(clone);
-                        }
+                        BallStarsSchedule clone = individual.Clone();
+                        offspring.Add(clone);
                     }
                 }
 
@@ -106,8 +103,8 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     {
                         schedule.AddSportsMatchFromPool(_matchPool);
                     }
-                    schedule.GranularMutate();
-                    // schedule.Mutate();
+                    // schedule.GranularMutate();
+                    schedule.Mutate();
                 }
                 
                 // Evaluate both the population and the offspring
