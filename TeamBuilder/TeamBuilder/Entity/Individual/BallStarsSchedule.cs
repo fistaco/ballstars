@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace TeamBuilder.Entity.Individual
@@ -609,7 +610,17 @@ namespace TeamBuilder.Entity.Individual
 
         public void SaveToCsv(string outputFile)
         {
-            throw new NotImplementedException();
+            File.WriteAllText(outputFile, "Team 1;Team 2;Match 1;Match 2;Match 3;RoundNr\n");
+            var lines = new List<string>();
+            for (int i = 0; i < this.Rounds.Length; i++)
+            {
+                RoundPlanning round = this.Rounds[i];
+                foreach (Event e in round.Events)
+                {
+                    lines.Add($"{e.TeamOneId};{e.TeamTwoId};{e.Matches[0]};{e.Matches[1]};{e.Matches[2]};{i}");
+                }
+            }
+            File.AppendAllLines(outputFile, lines);
         }
     }
 }
