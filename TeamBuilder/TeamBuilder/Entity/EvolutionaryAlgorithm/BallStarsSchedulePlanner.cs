@@ -24,9 +24,9 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly bool _useCrossover;
 
-        public BallStarsSchedulePlanner(int amountOfRounds, string[] teamNames, int avgPlayersPerTeam,
+        public BallStarsSchedulePlanner(int amountOfRounds, int avgPlayersPerTeam,
             string outputFile, bool usePredefinedMatchUps = false, bool useLocalSearch = false,
-            bool useCrossover = false)
+            bool useCrossover = false, string[] teamNames = null)
         {
             _amountOfRounds = amountOfRounds;
             _roundCrossoverCutoff = amountOfRounds / 4;
