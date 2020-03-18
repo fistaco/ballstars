@@ -289,6 +289,19 @@ namespace TeamBuilder.Entity.Individual
             // Apply a randomly chosen mutation method
             _mutationMethodProbabilities.ElementAt(Globals.Rand.Next(_mutationMethodProbabilities.Count)).Key();
         }
+
+        public void LocalSearchMutate(List<SportsMatch> matchPool)
+        {
+            int methodIndex = Globals.Rand.Next(_mutationMethodProbabilities.Count + 1);
+            if (methodIndex == _mutationMethodProbabilities.Count)
+            {
+                this.AddSportsMatchFromPool(matchPool);
+            }
+            else
+            {
+                _mutationMethodProbabilities.ElementAt(methodIndex).Key();
+            }
+        }
         
         public override void Mutate()
         {
