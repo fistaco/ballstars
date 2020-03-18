@@ -617,7 +617,16 @@ namespace TeamBuilder.Entity.Individual
                 RoundPlanning round = this.Rounds[i];
                 foreach (Event e in round.Events)
                 {
-                    lines.Add($"{e.TeamOneId};{e.TeamTwoId};{e.Matches[0]};{e.Matches[1]};{e.Matches[2]};{i}");
+                    string line = $"{e.TeamOneId};{e.TeamTwoId};";
+
+                    // Append each match string to the line if it exists. Append a placeholder otherwise.
+                    for (int j = 0; j < 3; j++)
+                    {
+                        line += e.Matches.Count > j ? $"{e.Matches[j]};" : "None;";
+                    }
+                    
+                    line += i;
+                    lines.Add(line);
                 }
             }
             File.AppendAllLines(outputFile, lines);
