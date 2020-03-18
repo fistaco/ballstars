@@ -610,19 +610,19 @@ namespace TeamBuilder.Entity.Individual
 
         public void SaveToCsv(string outputFile)
         {
-            File.WriteAllText(outputFile, "Team 1;Team 2;Match 1;Match 2;Match 3;RoundNr\n");
+            File.WriteAllText(outputFile, "Team 1,Team 2,Match 1,Match 2,Match 3,RoundNr\n");
             var lines = new List<string>();
             for (int i = 0; i < this.Rounds.Length; i++)
             {
                 RoundPlanning round = this.Rounds[i];
                 foreach (Event e in round.Events)
                 {
-                    string line = $"{e.TeamOneId};{e.TeamTwoId};";
+                    string line = $"{e.TeamOneId},{e.TeamTwoId},";
 
                     // Append each match string to the line if it exists. Append a placeholder otherwise.
                     for (int j = 0; j < 3; j++)
                     {
-                        line += e.Matches.Count > j ? $"{e.Matches[j]};" : "None;";
+                        line += e.Matches.Count > j ? $"{e.Matches[j]}," : "None;";
                     }
                     
                     line += i;
