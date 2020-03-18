@@ -61,9 +61,8 @@ namespace TeamBuilder.Entity.Individual
         /// <param name="amountOfTeams"></param>
         /// <param name="avgPlayersPerTeam"></param>
         /// <param name="teamStats"></param>
-        /// <param name="mutationMethodProbabilities"></param>
         public BallStarsSchedule(RoundPlanning[] rounds, int amountOfTeams, int avgPlayersPerTeam,
-            ScheduleTeamStatistics[] teamStats, Dictionary<Action, double> mutationMethodProbabilities)
+            ScheduleTeamStatistics[] teamStats)
         {
             this.Rounds = rounds;
 
@@ -71,7 +70,15 @@ namespace TeamBuilder.Entity.Individual
             _avgPlayersPerTeam = avgPlayersPerTeam;
             
             _teamStats = teamStats;
-            _mutationMethodProbabilities = mutationMethodProbabilities;
+            _mutationMethodProbabilities = new Dictionary<Action, double>()
+            {
+                { SwapSportsMatches, 0.85 },
+                { SwapEvents, 0.7 },
+                { RemoveSportsMatch, 0.9 },
+                { IncrementRandomSportsMatchPlayerAmount, 0.7 },
+                { DecrementRandomSportsMatchPlayerAmount, 0.7 },
+                // { ReplaceEventTeam, 0.5 },
+            };
         }
 
         /// <summary>
@@ -591,8 +598,7 @@ namespace TeamBuilder.Entity.Individual
                 teamStatsClone[i] = _teamStats[i].Clone();
             }
 
-            return new BallStarsSchedule(
-                roundsClone, _amountOfTeams, _avgPlayersPerTeam, teamStatsClone, _mutationMethodProbabilities);
+            return new BallStarsSchedule(roundsClone, _amountOfTeams, _avgPlayersPerTeam, teamStatsClone);
         }
 
         public override string ToString()
