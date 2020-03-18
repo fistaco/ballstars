@@ -24,14 +24,14 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         private readonly bool _useCrossover;
 
-        public BallStarsSchedulePlanner(int amountOfRounds, int avgPlayersPerTeam,
+        public BallStarsSchedulePlanner(int amountOfRounds, int amountOfTeams, int avgPlayersPerTeam,
             string outputFile, bool usePredefinedMatchUps = false, bool useLocalSearch = false,
             bool useCrossover = false, string[] teamNames = null)
         {
             _amountOfRounds = amountOfRounds;
             _roundCrossoverCutoff = amountOfRounds / 4;
             _teamNames = teamNames;
-            _amountOfTeams = teamNames.Length;
+            _amountOfTeams = amountOfTeams;
             _avgPlayersPerTeam = avgPlayersPerTeam;
 
             _matchPool = this.InitialiseMatchPool();
@@ -135,10 +135,10 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                 currentGen++;
             }
 
-            // // Save the best solution to a file // TODO
+            // Save the best solution to a file
             // bestSolution.SaveToCsv(_outputFile);
-            // Console.WriteLine($"Algorithm finished. Saving result to {_outputFile}.");
             Console.WriteLine($"Algorithm finished. The best schedule is as follows:\n{bestSolution}");
+            // Console.WriteLine($"The final schedule has been saved to {_outputFile}.");
         }
 
         /// <summary>
