@@ -622,7 +622,7 @@ namespace TeamBuilder.Entity.Individual
                     // Append each match string to the line if it exists. Append a placeholder otherwise.
                     for (int j = 0; j < 3; j++)
                     {
-                        line += e.Matches.Count > j ? $"{e.Matches[j]}," : "None;";
+                        line += e.Matches.Count > j ? $"{e.Matches[j]}," : "None,";
                     }
                     
                     line += i;
