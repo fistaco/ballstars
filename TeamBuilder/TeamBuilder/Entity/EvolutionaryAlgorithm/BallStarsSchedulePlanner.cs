@@ -50,16 +50,20 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
 
         public override void Run()
         {
+            int n = 4096;
+            Console.WriteLine($"Starting algorithm with {n} individuals, {_amountOfRounds} rounds, " +
+                              $"{_amountOfTeams} teams, and {_avgPlayersPerTeam} players per team.");
+
             Console.WriteLine("Initiating random population of schedules...");
             // Construct n random solutions, which are permutations of one original random set
-            List<BallStarsSchedule> population = InitRandomPopulation(4096)
+            List<BallStarsSchedule> population = InitRandomPopulation(n)
                 .Select(indiv => indiv as BallStarsSchedule).ToList();
 
             // Evolve over generations until a sufficiently good solution is found or time runs out.
             BallStarsSchedule bestSolution = population[0];
             float bestFitness = bestSolution.Evaluate();
             int currentGen = 0;
-            while (bestFitness != 0f && currentGen < 75) // TODO: Include timer if necessary
+            while (bestFitness != 0f && currentGen < 50) // TODO: Include timer if necessary
             {
                 Console.WriteLine($"Commencing generation {currentGen}.");
 
@@ -125,7 +129,6 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                         bestSolution = individual;
 
                         Console.WriteLine($"New best fitness: {bestFitness} (found in generation {currentGen})");
-                        // bestSolution.Print(_playerNames);
                     }
                 }
 
@@ -133,9 +136,69 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             }
 
             // Save the best solution to a file
-            // bestSolution.SaveToCsv(_outputFile);
+            bestSolution.SaveToCsv(_outputFile);
             Console.WriteLine($"Algorithm finished. The best schedule is as follows:\n{bestSolution}");
-            // Console.WriteLine($"The final schedule has been saved to {_outputFile}.");
+            Console.WriteLine($"The final schedule has been saved to {_outputFile}.");
+        }
+
+        public void RunSimulatedAnnealing(double initialTemperature = 10, double alpha = 0.9999)
+        {
+            // Start off with a randomised schedule for an even amount of teams
+            int eventsPerRound = _amountOfTeams / 2;
+            BallStarsSchedule currentSchedule = BallStarsSchedule.Random(
+                _amountOfTeams, eventsPerRound, eventsPerRound, _amountOfRounds, _matchPool, false,
+                _avgPlayersPerTeam, _predefinedMatchUps
+            );
+            BallStarsSchedule bestSchedule = currentSchedule;
+            double bestFitness = currentSchedule.Evaluate();
+            double currentScheduleFitness = bestFitness;
+
+            double minimumTemp = 0.000000001;
+            double temperature = initialTemperature;
+            int iters = 0;
+            while (iters < 100000)
+            {
+                if (iters % 1000 == 0) { Console.WriteLine($"Running iteration {iters}."); }
+                
+                // Pick a neighbour by cloning and mutating
+                BallStarsSchedule neighbour = currentSchedule.Clone();
+                neighbour.LocalSearchMutate(_matchPool);
+                neighbour.Evaluate();
+                
+                // Always accept better solutions
+                if (neighbour.Fitness < currentScheduleFitness)
+                {
+                    // Update currently tracking schedule and fitness
+                    currentScheduleFitness = neighbour.Fitness;
+                    currentSchedule = neighbour;
+
+                    // Update best found schedule and fitness if they improved
+                    if (currentScheduleFitness < bestFitness)
+                    {
+                        bestFitness = currentScheduleFitness;
+                        bestSchedule = currentSchedule.Clone();
+                    
+                        Console.WriteLine($"New best fitness: {bestFitness} (found in iteration {iters})");
+                    }
+                }
+                else
+                {
+                    // Accept worse solutions often when starting out, but not as much near termination
+                    double diff = neighbour.Fitness - currentSchedule.Fitness;
+                    double acceptanceProb = 1 / (1 + Math.Exp(diff / temperature));
+                    if (Globals.Rand.NextDouble() < acceptanceProb)
+                    {
+                        currentSchedule = neighbour;
+                        currentScheduleFitness = neighbour.Fitness;
+                    }
+                }
+
+                temperature *= alpha;
+                iters++;
+                // TODO: Maybe add a temperature reset to get out of a local minimum
+            }
+            
+            Console.WriteLine($"Algorithm finished. The best schedule is as follows:\n{bestSchedule}");
         }
 
         /// <summary>
@@ -235,8 +298,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             int eventsPerRound = addBreakRound ? _amountOfTeams / 2 + 1 : _amountOfTeams / 2;
             int regularEventsPerRound = addBreakRound ? eventsPerRound - 1 : eventsPerRound;
             
-            Console.WriteLine($"-> Creating {amountOfIndividuals} schedules with {_amountOfTeams} teams, " +
-                              $"{_amountOfRounds} rounds, and {eventsPerRound} events per round.");
+            Console.WriteLine($"-> Creating {amountOfIndividuals} schedules with {eventsPerRound} events per round.");
             for (int i = 0; i < amountOfIndividuals; i++)
             {
                 population.Add(BallStarsSchedule.Random(
