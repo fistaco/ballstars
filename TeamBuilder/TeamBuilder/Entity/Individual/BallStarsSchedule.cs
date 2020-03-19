@@ -415,8 +415,10 @@ namespace TeamBuilder.Entity.Individual
             }
             
             int matchIndex = Globals.Rand.Next(e.Matches.Count);
+            SportsMatch match = e.Matches[matchIndex];
             
-            this.UpdateEventTeamStatsAfterSportsMatchRemoval(roundIndex, e, e.Matches[matchIndex]);
+            this.UpdateEventTeamStatsAfterSportsMatchRemoval(roundIndex, e, match);
+            this.Rounds[roundIndex].ModifyPlayerAssignment(match.MatchType, -match.PlayersPerTeam);
             e.RemoveMatchAtIndex(matchIndex);
         }
 
