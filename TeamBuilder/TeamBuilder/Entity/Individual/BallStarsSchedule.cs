@@ -45,7 +45,7 @@ namespace TeamBuilder.Entity.Individual
             _mutationMethodProbabilities = new Dictionary<Action, double>()
             {
                 { SwapSportsMatches, 0.85 },
-                { SwapEvents, 0.7 },
+                // { SwapEvents, 0.7 },
                 { RemoveSportsMatch, 0.9 },
                 { IncrementRandomSportsMatchPlayerAmount, 0.7 },
                 { DecrementRandomSportsMatchPlayerAmount, 0.7 },
@@ -73,7 +73,7 @@ namespace TeamBuilder.Entity.Individual
             _mutationMethodProbabilities = new Dictionary<Action, double>()
             {
                 { SwapSportsMatches, 0.85 },
-                { SwapEvents, 0.7 },
+                // { SwapEvents, 0.7 },
                 { RemoveSportsMatch, 0.9 },
                 { IncrementRandomSportsMatchPlayerAmount, 0.7 },
                 { DecrementRandomSportsMatchPlayerAmount, 0.7 },
@@ -192,30 +192,11 @@ namespace TeamBuilder.Entity.Individual
                 }
             }
         }
-
-        // TODO: Remove these debug variables later
-        private int _teamCoveragePenalty;
-        private int _sportImbalance;
-        private int _sportsCoveragePenalty;
-        private int _eventLimitPenalty;
-        private int _roundPlayerLimitPenalty;
-        private int _varietyPenalty;
-        private int _refereePenalty;
         
         public override float Evaluate()
         {
             int fitness = 0;
-            
-            // TODO: Remove this debug stuff later
-            _teamCoveragePenalty = _teamStats.Sum(teamStats => teamStats.TeamCoveragePenalty);
-            _sportImbalance = _teamStats.Sum(teamStats => teamStats.SportImbalance);
-            _sportsCoveragePenalty = _teamStats.Sum(teamStats => teamStats.SportsCoveragePenalty);
-            _eventLimitPenalty = _teamStats.Sum(teamStats => teamStats.EventLimitPenalty);
-            _roundPlayerLimitPenalty =
-                _teamStats.Sum(teamStats => teamStats.RoundPlayerLimitPenalty(_avgPlayersPerTeam) * 9);
-            _varietyPenalty = this.Rounds.Sum(r => r.Events.Sum(e => e.VarietyPenalty * MediumEvalPenalty));
-            _refereePenalty = this.Rounds.Sum(r => r.RefereePenalty);
-            
+
             // TODO: Test/check if scaling by squaring is useful for some of the penalties
             int teamStatFitness = _teamStats.Sum(
                 teamStats => teamStats.TeamCoveragePenalty +   // Play each team at least once

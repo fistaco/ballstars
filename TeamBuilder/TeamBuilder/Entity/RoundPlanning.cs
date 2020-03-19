@@ -107,9 +107,13 @@ namespace TeamBuilder.Entity
             return PlayersPerMatchType[category] + modification <= Globals.MatchTypePlayerLimitsPerTeam[category];
         }
 
-        public bool ShitIsAlright()
+        /// <summary>
+        /// Checks whether or not the tracked player counts per category are equal to the actual sum of player counts in
+        /// this round's events.
+        /// </summary>
+        /// <returns></returns>
+        public bool MatchTypePlayerCountsAreValid()
         {
-            // TODO: Remove this debug stuff when this.PlayersPerMatch is always correct
             int actualCounts = 0;
             foreach (Event e in Events)
             {
@@ -120,10 +124,6 @@ namespace TeamBuilder.Entity
                 }
             }
             int trackedCounts = this.PlayersPerMatchType.Values.Sum();
-            if (actualCounts != trackedCounts)
-            {
-                int db = 4;
-            }
 
             return actualCounts == trackedCounts;
         }
