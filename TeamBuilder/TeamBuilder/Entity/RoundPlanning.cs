@@ -66,7 +66,7 @@ namespace TeamBuilder.Entity
                     (predefinedMatchUps[i].Item1, predefinedMatchUps[i].Item2) :
                     (Globals.Rand.Next(0, amountOfTeams), Globals.Rand.Next(0, amountOfTeams));
 
-                round.Events[i] = Event.Random(t0, t1, matchPool, avgPlayersPerTeam);
+                round.Events[i] = Event.Random(t0, t1, matchPool, avgPlayersPerTeam, round.PlayersPerMatchType);
             }
             // Generate a break event if the amount of teams is odd.
             if (breakRound)
@@ -96,14 +96,66 @@ namespace TeamBuilder.Entity
             return legalAssignment;
         }
 
+        /// <summary>
+        /// Returns whether the given player amount modification to the given category is legal or not.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="modification"></param>
+        /// <returns></returns>
         public bool LegalPlayerAssignment(SportsMatchCategory category, int modification)
         {
             return PlayersPerMatchType[category] + modification <= Globals.MatchTypePlayerLimitsPerTeam[category];
         }
 
+        public bool ShitIsAlright()
+        {
+            // TODO: Remove this debug stuff when this.PlayersPerMatch is always correct
+            int actualCounts = 0;
+            foreach (Event e in Events)
+            {
+                if (e == null) break;
+                foreach (SportsMatch match in e.Matches)
+                {
+                    actualCounts += match.PlayersPerTeam;
+                }
+            }
+            int trackedCounts = this.PlayersPerMatchType.Values.Sum();
+            if (actualCounts != trackedCounts)
+            {
+                int db = 4;
+            }
+
+            return actualCounts == trackedCounts;
+        }
+        
         public void ModifyPlayerAssignment(SportsMatchCategory category, int modification)
         {
             PlayersPerMatchType[category] += modification;
+        }
+
+        public (bool, Dictionary<SportsMatchCategory, int>) LegalEventSwap(Event old, Event @new)
+        {
+            var categoryCounts = new Dictionary<SportsMatchCategory, int>(PlayersPerMatchType);
+
+            // Make all category count changes and check if the counts remain valid
+            old.Matches.ForEach(m => categoryCounts[m.MatchType] -= m.PlayersPerTeam);
+            // @new.Matches.ForEach(m => categoryCounts[m.MatchType] += m.PlayersPerTeam);
+            foreach (SportsMatch match in @new.Matches)
+            {
+                categoryCounts[match.MatchType] += match.PlayersPerTeam;
+            }
+            
+            bool legalSwap = true;
+            foreach (KeyValuePair<SportsMatchCategory, int> pair in categoryCounts)
+            {
+                if (pair.Value > Globals.MatchTypePlayerLimitsPerTeam[pair.Key])
+                {
+                    legalSwap = false;
+                    break;
+                }
+            }
+
+            return (legalSwap, categoryCounts);
         }
 
         public bool LegalSportsMatchSwap(SportsMatch old, SportsMatch @new)

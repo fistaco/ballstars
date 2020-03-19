@@ -141,7 +141,6 @@ namespace TeamBuilder.Entity.Individual
                     this.UpdateTeamStats(i, j);
                 }
             }
-            this.UpdateRoundPlayerCounts();
         }
 
         /// <summary>
@@ -310,7 +309,7 @@ namespace TeamBuilder.Entity.Individual
             // Remove a random SportsMatch from the schedule
             // Swap 2 random SportsMatch objects with identical player amounts within the schedule
             // Swap 2 random Event objects between rounds
-            // For some SportsMatch, increment or decrement its player count by 1 // TODO: Implement player limits
+            // For some SportsMatch, increment or decrement its player count by 1
             foreach (KeyValuePair<Action, double> pair in _mutationMethodProbabilities)
             {
                 Action mutationMethod = pair.Key;
@@ -383,9 +382,21 @@ namespace TeamBuilder.Entity.Individual
             int e1Index = Globals.Rand.Next(r1.Events.Length);
             Event e1 = r1.Events[e1Index];
 
+            // Check if the rounds' available resources allow for the swap
+            (bool legalSwapInR0, var newCategoryCountsForR0) = r0.LegalEventSwap(e0, e1);
+            (bool legalSwapInR1, var newCategoryCountsForR1) = r1.LegalEventSwap(e1, e0);
+            if (!legalSwapInR0 || !legalSwapInR1)
+            {
+                return;
+            }
+
             // Swap
             r0.Events[e0Index] = e1;
             r1.Events[e1Index] = e0;
+            
+            // Update round player counts
+            r0.PlayersPerMatchType = newCategoryCountsForR0;
+            r1.PlayersPerMatchType = newCategoryCountsForR1;
             
             // Update relevant team stats, i.e. each team's events played per round
             this.ModifyEventTeamsEventsPerRound(e0, r0Index, -1);

@@ -1,5 +1,6 @@
 ﻿using System;
 using TeamBuilder.Entity.EvolutionaryAlgorithm;
+using TeamBuilder.Entity.Individual;
 
 namespace TeamBuilder
 {

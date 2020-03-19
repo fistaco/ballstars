@@ -145,12 +145,16 @@ namespace TeamBuilder.Entity
         /// Constructs an Event with a random amount of sports matches where the amount of participating players remains
         /// under the limit if one is given.
         /// </summary>
-        /// <param name="teamOneId"></param>
-        /// <param name="teamTwoId"></param>
-        /// <param name="matchPool"></param>
-        /// <param name="avgPlayersPerTeam"></param>
+        /// <param name="teamOneId">The ID of one of the teams participating in this event.</param>
+        /// <param name="teamTwoId">The ID of the other team participating in this event.</param>
+        /// <param name="matchPool">List of matches from which the random matches in this event will be chosen.</param>
+        /// <param name="avgPlayersPerTeam">The maximum amount of players per team that will be assigned to this event.
+        /// </param>
+        /// <param name="round">The round in which this event is planned.</param>
+        /// <param name="playersPerMatchType"></param>
         /// <returns></returns>
-        public static Event Random(int teamOneId, int teamTwoId, List<SportsMatch> matchPool, int avgPlayersPerTeam)
+        public static Event Random(int teamOneId, int teamTwoId, List<SportsMatch> matchPool, int avgPlayersPerTeam,
+            Dictionary<SportsMatchCategory, int> playersPerMatchType)
         {
             var evnt = new Event(teamOneId, teamTwoId);
             
@@ -167,9 +171,17 @@ namespace TeamBuilder.Entity
                 {
                     break;
                 }
+                
+                // Check if there is enough space for the new match's sport within this round
+                int newMatchTypeCount = playersPerMatchType[match.MatchType] + match.PlayersPerTeam;
+                if (newMatchTypeCount > Globals.MatchTypePlayerLimitsPerTeam[match.MatchType])
+                {
+                    continue;
+                }
 
                 evnt.AddMatch(match);
                 allocatedPlayers = newPlayerCount;
+                playersPerMatchType[match.MatchType] = newMatchTypeCount;
             }
 
             return evnt;
