@@ -443,13 +443,15 @@ namespace TeamBuilder.Entity.Individual
             
             // Add the modification to a random match's player count, but only if it's within the allowed limits
             int modifiedPlayerAmount = match.PlayersPerTeam + modification;
-            bool matchAllowsModification = match.PlayerAmountIsAllowed(modifiedPlayerAmount);
-            bool roundAllowsModification =
-                Rounds[roundIndex].ModifyPlayerAssignmentIfWithinLimit(match.MatchType, modification);
-            if (matchAllowsModification && roundAllowsModification)
+            if (match.PlayerAmountIsAllowed(modifiedPlayerAmount))
             { 
-                match.PlayersPerTeam = modifiedPlayerAmount;
-                this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
+                bool roundAllowsModification =
+                    Rounds[roundIndex].ModifyPlayerAssignmentIfWithinLimit(match.MatchType, modification);
+                if (roundAllowsModification)
+                {
+                    match.PlayersPerTeam = modifiedPlayerAmount;
+                    this.ModifyEventTeamStatsPlayerCounts(roundIndex, evnt, modification);
+                }
             }
         }
 
