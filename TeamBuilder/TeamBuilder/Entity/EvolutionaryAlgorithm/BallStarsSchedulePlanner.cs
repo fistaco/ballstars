@@ -63,7 +63,7 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
             BallStarsSchedule bestSolution = population[0];
             float bestFitness = bestSolution.Evaluate();
             int currentGen = 0;
-            while (bestFitness != 0f && currentGen < 50) // TODO: Include timer if necessary
+            while (bestFitness != 0f && currentGen < 1000) // TODO: Include timer if necessary
             {
                 Console.WriteLine($"Commencing generation {currentGen}.");
 
@@ -228,14 +228,17 @@ namespace TeamBuilder.Entity.EvolutionaryAlgorithm
                     matchUps.Add(new Tuple<int, int>(teamOneArray[i], teamTwoArray[i]));
                 }
                 
-                // Rotate indices by decrementing them. 1 Becomes maxId when rotated.
-                for (int i = 1; i < arraySize; i++)
+                // Rotate all indices except the first index of the first array.
+                int arrayOneCarry = teamOneArray[arraySize - 1]; // Memorise the int we'll rotate to the second array.
+                // Iterate backwards through the first array to avoid continuously copying the same int
+                for (int i = arraySize - 1; i > 0; i--)
                 {
-                    teamOneArray[i] = teamOneArray[i] == 1 ? maxId : teamOneArray[i] - 1;
+                    teamOneArray[i] = i == 1 ? teamTwoArray[0] : teamOneArray[i - 1];
                 }
+                // Rotate the second array normally
                 for (int i = 0; i < arraySize; i++)
                 {
-                    teamTwoArray[i] = teamTwoArray[i] == 1 ? maxId : teamTwoArray[i] - 1;
+                    teamTwoArray[i] = i == arraySize - 1 ? arrayOneCarry : teamTwoArray[i + 1];
                 }
             }
 
